@@ -6,9 +6,12 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
+use codec::{Decode, Encode, MaxEncodedLen};
 use pallet_grandpa::{
 	fg_primitives, AuthorityId as GrandpaId, AuthorityList as GrandpaAuthorityList,
 };
+use scale_info::TypeInfo;
+use serde::{Deserialize, Serialize};
 use sp_api::impl_runtime_apis;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
@@ -198,6 +201,71 @@ impl frame_system::Config for Runtime {
 	type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
+#[derive(
+	Debug,
+	TypeInfo,
+	Decode,
+	Encode,
+	Copy,
+	Clone,
+	Ord,
+	Eq,
+	PartialEq,
+	PartialOrd,
+	MaxEncodedLen,
+	Serialize,
+	Deserialize,
+)]
+pub enum Coooooins {
+	GM,
+	DaBOIZ,
+}
+
+parameter_types! {
+	pub const GetNativeCurrencyId: Coooooins = Coooooins::DaBOIZ;
+}
+
+pub struct DustRemovalWhitelist;
+impl frame_support::traits::Contains<AccountId> for DustRemovalWhitelist {
+	fn contains(a: &AccountId) -> bool {
+		false
+	}
+}
+
+pub type Amount = i128;
+
+use orml_traits::parameter_type_with_key;
+use sp_runtime::traits::Zero;
+
+parameter_type_with_key! {
+	pub ExistentialDeposits: |_currency_id: Coooooins| -> Balance {
+		Zero::zero()
+	};
+}
+
+impl orml_tokens::Config for Runtime {
+	type Event = Event;
+	type Balance = Balance;
+	type Amount = Amount;
+	type CurrencyId = Coooooins;
+	type WeightInfo = ();
+	type ExistentialDeposits = ExistentialDeposits;
+	type OnDust = ();
+	type MaxLocks = ConstU32<50>;
+	type MaxReserves = ();
+	type ReserveIdentifier = [u8; 8];
+	type DustRemovalWhitelist = DustRemovalWhitelist;
+}
+
+impl orml_currencies::Config for Runtime {
+	//	type Event = Event;
+	type MultiCurrency = Tokens;
+	type NativeCurrency =
+		orml_currencies::BasicCurrencyAdapter<Runtime, Balances, Amount, BlockNumber>;
+	type GetNativeCurrencyId = GetNativeCurrencyId;
+	type WeightInfo = ();
+}
+
 impl pallet_randomness_collective_flip::Config for Runtime {}
 
 impl pallet_aura::Config for Runtime {
@@ -279,6 +347,8 @@ construct_runtime!(
 		Aura: pallet_aura,
 		Grandpa: pallet_grandpa,
 		Balances: pallet_balances,
+		Currencies: orml_currencies,
+		Tokens: orml_tokens,
 		TransactionPayment: pallet_transaction_payment,
 		Sudo: pallet_sudo,
 
