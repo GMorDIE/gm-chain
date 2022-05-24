@@ -218,11 +218,12 @@ impl frame_system::Config for Runtime {
 )]
 pub enum Coooooins {
 	GM,
-	DaBOIZ,
+	GN,
+	FREN,
 }
 
 parameter_types! {
-	pub const GetNativeCurrencyId: Coooooins = Coooooins::DaBOIZ;
+	pub const GetNativeCurrencyId: Coooooins = Coooooins::FREN;
 }
 
 pub struct DustRemovalWhitelist;
