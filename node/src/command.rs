@@ -5,7 +5,7 @@ use crate::{
 	service,
 };
 use frame_benchmarking_cli::{BenchmarkCmd, SUBSTRATE_REFERENCE_HARDWARE};
-use node_template_runtime::Block;
+use gm_runtime::Block;
 use sc_cli::{ChainSpec, RuntimeVersion, SubstrateCli};
 use sc_service::PartialComponents;
 use std::sync::Arc;
@@ -39,13 +39,14 @@ impl SubstrateCli for Cli {
 		Ok(match id {
 			"dev" => Box::new(chain_spec::development_config()?),
 			"" | "local" => Box::new(chain_spec::local_testnet_config()?),
-			path =>
-				Box::new(chain_spec::ChainSpec::from_json_file(std::path::PathBuf::from(path))?),
+			path => {
+				Box::new(chain_spec::ChainSpec::from_json_file(std::path::PathBuf::from(path))?)
+			},
 		})
 	}
 
 	fn native_runtime_version(_: &Box<dyn ChainSpec>) -> &'static RuntimeVersion {
-		&node_template_runtime::VERSION
+		&gm_runtime::VERSION
 	}
 }
 
@@ -118,7 +119,7 @@ pub fn run() -> sc_cli::Result<()> {
 								"Runtime benchmarking wasn't enabled when building the node. \
 							You can enable it with `--features runtime-benchmarks`."
 									.into(),
-							)
+							);
 						}
 
 						cmd.run::<Block, service::ExecutorDispatch>(config)
@@ -141,8 +142,9 @@ pub fn run() -> sc_cli::Result<()> {
 
 						cmd.run(config, client, inherent_benchmark_data()?, Arc::new(ext_builder))
 					},
-					BenchmarkCmd::Machine(cmd) =>
-						cmd.run(&config, SUBSTRATE_REFERENCE_HARDWARE.clone()),
+					BenchmarkCmd::Machine(cmd) => {
+						cmd.run(&config, SUBSTRATE_REFERENCE_HARDWARE.clone())
+					},
 				}
 			})
 		},

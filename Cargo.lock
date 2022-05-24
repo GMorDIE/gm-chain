@@ -2055,6 +2055,43 @@ dependencies = [
 ]
 
 [[package]]
+name = "gm-runtime"
+version = "4.0.0-dev"
+dependencies = [
+ "frame-benchmarking",
+ "frame-executive",
+ "frame-support",
+ "frame-system",
+ "frame-system-benchmarking",
+ "frame-system-rpc-runtime-api",
+ "frame-try-runtime",
+ "hex-literal",
+ "pallet-aura",
+ "pallet-balances",
+ "pallet-gm",
+ "pallet-grandpa",
+ "pallet-randomness-collective-flip",
+ "pallet-sudo",
+ "pallet-timestamp",
+ "pallet-transaction-payment",
+ "pallet-transaction-payment-rpc-runtime-api",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-api",
+ "sp-block-builder",
+ "sp-consensus-aura",
+ "sp-core",
+ "sp-inherents",
+ "sp-offchain",
+ "sp-runtime",
+ "sp-session",
+ "sp-std",
+ "sp-transaction-pool",
+ "sp-version",
+ "substrate-wasm-builder",
+]
+
+[[package]]
 name = "group"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3725,8 +3762,8 @@ dependencies = [
  "frame-benchmarking",
  "frame-benchmarking-cli",
  "frame-system",
+ "gm-runtime",
  "jsonrpsee",
- "node-template-runtime",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc",
  "sc-basic-authorship",
@@ -3757,43 +3794,6 @@ dependencies = [
  "substrate-build-script-utils",
  "substrate-frame-rpc-system",
  "try-runtime-cli",
-]
-
-[[package]]
-name = "node-template-runtime"
-version = "4.0.0-dev"
-dependencies = [
- "frame-benchmarking",
- "frame-executive",
- "frame-support",
- "frame-system",
- "frame-system-benchmarking",
- "frame-system-rpc-runtime-api",
- "frame-try-runtime",
- "hex-literal",
- "pallet-aura",
- "pallet-balances",
- "pallet-grandpa",
- "pallet-randomness-collective-flip",
- "pallet-sudo",
- "pallet-template",
- "pallet-timestamp",
- "pallet-transaction-payment",
- "pallet-transaction-payment-rpc-runtime-api",
- "parity-scale-codec",
- "scale-info",
- "sp-api",
- "sp-block-builder",
- "sp-consensus-aura",
- "sp-core",
- "sp-inherents",
- "sp-offchain",
- "sp-runtime",
- "sp-session",
- "sp-std",
- "sp-transaction-pool",
- "sp-version",
- "substrate-wasm-builder",
 ]
 
 [[package]]
@@ -4007,6 +4007,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-gm"
+version = "4.0.0-dev"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
 name = "pallet-grandpa"
 version = "4.0.0-dev"
 source = "git+https://github.com/paritytech/substrate.git?branch=polkadot-v0.9.22#616d33ea23bab86cafffaf116fc607b6790fb4eb"
@@ -4076,20 +4090,6 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
-]
-
-[[package]]
-name = "pallet-template"
-version = "4.0.0-dev"
-dependencies = [
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "scale-info",
- "sp-core",
- "sp-io",
- "sp-runtime",
 ]
 
 [[package]]
