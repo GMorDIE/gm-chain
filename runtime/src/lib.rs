@@ -9,6 +9,7 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 mod weights;
 pub mod xcm_config;
 
+use orml_tokens::GetOpposite;
 use smallvec::smallvec;
 use sp_api::impl_runtime_apis;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
@@ -371,6 +372,16 @@ pub enum Coooooins {
     FREN,
     GM,
     GN,
+}
+
+impl GetOpposite for Coooooins {
+    fn get_opposite(self) -> Self {
+        match self {
+            Coooooins::FREN => panic!(),
+            Coooooins::GM => Coooooins::GN,
+            Coooooins::GN => Coooooins::GM,
+        }
+    }
 }
 
 parameter_type_with_key! {
