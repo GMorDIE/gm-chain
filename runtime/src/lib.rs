@@ -418,14 +418,24 @@ impl orml_tokens::Config for Runtime {
 
 parameter_types! {
     pub const GetNativeCurrencyId: Coooooins = Coooooins::FREN;
+    pub const GetGMCurrencyId: Coooooins = Coooooins::GM;
+    pub const GetGNCurrencyId: Coooooins = Coooooins::GN;
+
+    pub const PeriodLength: BlockNumber = 690u32;
 }
 
 impl orml_currencies::Config for Runtime {
+    type Event = Event;
     type MultiCurrency = Tokens;
     type NativeCurrency =
         orml_currencies::BasicCurrencyAdapter<Runtime, Balances, Amount, BlockNumber>;
     type GetNativeCurrencyId = GetNativeCurrencyId;
     type WeightInfo = ();
+
+    type GetGMCurrencyId = GetGMCurrencyId;
+    type GetGNCurrencyId = GetGNCurrencyId;
+
+    type PeriodLength = PeriodLength;
 }
 
 parameter_types! {
@@ -563,7 +573,7 @@ construct_runtime!(
         Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 10,
         TransactionPayment: pallet_transaction_payment::{Pallet, Storage} = 11,
         Tokens: orml_tokens::{Pallet, Storage, Event<T>, Config<T>} = 12,
-        Currencies: orml_currencies::{Pallet, Call} = 13,
+        Currencies: orml_currencies::{Pallet, Call, Storage, Event<T>} = 13,
 
         // Collator support. The order of these 4 are important and shall not change.
         Authorship: pallet_authorship::{Pallet, Call, Storage} = 20,
