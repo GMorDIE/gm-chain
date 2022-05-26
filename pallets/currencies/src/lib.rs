@@ -75,6 +75,8 @@ pub use weights::WeightInfo;
 
 #[frame_support::pallet]
 pub mod module {
+    use sp_runtime::traits::One;
+
     use super::*;
 
     pub(crate) type BalanceOf<T> = <<T as Config>::MultiCurrency as MultiCurrency<
@@ -137,6 +139,8 @@ pub mod module {
         BalanceTooLow,
         /// Deposit result is not expected
         DepositFailed,
+
+        NotAWholeUnit,
     }
 
     #[pallet::event]
@@ -198,7 +202,10 @@ pub mod module {
     pub type CurrentTimePeriod<T: Config> = StorageValue<_, TimePeriod, ValueQuery>;
 
     #[pallet::call]
-    impl<T: Config> Pallet<T> {
+    impl<T: Config> Pallet<T>
+    where
+        BalanceOf<T>: From<u128>,
+    {
         /// Transfer some balance to another account under `currency_id`.
         ///
         /// The dispatch origin for this call must be `Signed` by the
@@ -234,8 +241,18 @@ pub mod module {
         pub fn burn_fren(
             origin: OriginFor<T>,
             #[pallet::compact] amount: BalanceOf<T>,
-        ) -> DispatchResult {
+        ) -> DispatchResult
+        where
+            BalanceOf<T>: From<u128>,
+        {
             let fren = ensure_signed(origin)?;
+
+            ensure!(
+                (amount % (BalanceOf::<T>::from(1000000000000u128))).is_zero(),
+                Error::<T>::NotAWholeUnit
+            );
+
+            let amount = amount / BalanceOf::<T>::from(1000000000000u128);
 
             // Burning $FREN
             T::NativeCurrency::withdraw(&fren, amount)?;
