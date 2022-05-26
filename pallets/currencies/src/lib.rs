@@ -75,8 +75,6 @@ pub use weights::WeightInfo;
 
 #[frame_support::pallet]
 pub mod module {
-    use sp_runtime::traits::One;
-
     use super::*;
 
     pub(crate) type BalanceOf<T> = <<T as Config>::MultiCurrency as MultiCurrency<

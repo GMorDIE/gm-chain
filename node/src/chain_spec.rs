@@ -288,5 +288,6 @@ fn testnet_genesis(
             safe_xcm_version: Some(SAFE_XCM_VERSION),
         },
         tokens: Default::default(),
+        treasury: Default::default(),
     }
 }
