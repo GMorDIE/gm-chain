@@ -5111,14 +5111,17 @@ dependencies = [
 [[package]]
 name = "orml-tokens"
 version = "0.4.1-dev"
-source = "git+https://github.com/open-web3-stack/open-runtime-module-library?branch=master#e65be8747f4c5245721d281c93746fa17a06f924"
 dependencies = [
  "frame-support",
  "frame-system",
  "orml-traits",
+ "pallet-elections-phragmen",
+ "pallet-treasury",
  "parity-scale-codec",
  "scale-info",
  "serde",
+ "sp-core",
+ "sp-io",
  "sp-runtime",
  "sp-std",
 ]
