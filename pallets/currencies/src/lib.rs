@@ -125,6 +125,9 @@ pub mod module {
         #[pallet::constant]
         type PeriodLength: Get<Self::BlockNumber>;
 
+        #[pallet::constant]
+        type TreasuryAccount: Get<Self::AccountId>;
+
         /// Weight information for extrinsics in this module.
         type WeightInfo: WeightInfo;
     }
@@ -145,7 +148,8 @@ pub mod module {
     #[pallet::generate_deposit(pub(crate) fn deposit_event)]
     pub enum Event<T: Config> {
         MorningStarted,
-        MidStarted,
+        MidOneStarted,
+        MidTwoStarted,
         NightStarted,
         FrenBurned {
             who: T::AccountId,
@@ -164,14 +168,18 @@ pub mod module {
                 if (n % T::PeriodLength::get()).is_zero() {
                     match CurrentTimePeriod::<T>::get() {
                         TimePeriod::Morning => {
-                            CurrentTimePeriod::<T>::set(TimePeriod::Mid);
-                            Self::deposit_event(Event::MidStarted);
+                            CurrentTimePeriod::<T>::set(TimePeriod::MidOne);
+                            Self::deposit_event(Event::MidOneStarted);
                         }
-                        TimePeriod::Mid => {
+                        TimePeriod::MidOne => {
                             CurrentTimePeriod::<T>::set(TimePeriod::Night);
                             Self::deposit_event(Event::NightStarted);
                         }
                         TimePeriod::Night => {
+                            CurrentTimePeriod::<T>::set(TimePeriod::MidTwo);
+                            Self::deposit_event(Event::MidTwoStarted);
+                        }
+                        TimePeriod::MidTwo => {
                             CurrentTimePeriod::<T>::set(TimePeriod::Morning);
                             Self::deposit_event(Event::MorningStarted);
                         }
@@ -185,8 +193,9 @@ pub mod module {
     #[derive(Debug, Decode, Encode, MaxEncodedLen, TypeInfo)]
     pub enum TimePeriod {
         Morning,
-        Mid,
+        MidOne,
         Night,
+        MidTwo,
     }
 
     impl Default for TimePeriod {
@@ -250,7 +259,7 @@ pub mod module {
                 Error::<T>::NotAWholeUnit
             );
 
-            let amount = amount / BalanceOf::<T>::from(1000000000000u128);
+            let amount_in_token = amount / BalanceOf::<T>::from(1000000000000u128);
 
             // Burning $FREN
             T::NativeCurrency::withdraw(&fren, amount)?;
@@ -260,14 +269,25 @@ pub mod module {
                 TimePeriod::Morning => {
                     let gm_currency_id = T::GetGMCurrencyId::get();
 
-                    <Self as MultiCurrency<T::AccountId>>::deposit(gm_currency_id, &fren, amount)?;
+                    <Self as MultiCurrency<T::AccountId>>::deposit(
+                        gm_currency_id,
+                        &fren,
+                        amount_in_token,
+                    )?;
 
                     Some(gm_currency_id)
                 }
-                TimePeriod::Mid => None,
+                TimePeriod::MidOne | TimePeriod::MidTwo => {
+                    T::NativeCurrency::deposit(&T::TreasuryAccount::get(), amount)?;
+                    None
+                }
                 TimePeriod::Night => {
                     let gn_currency_id = T::GetGNCurrencyId::get();
-                    <Self as MultiCurrency<T::AccountId>>::deposit(gn_currency_id, &fren, amount)?;
+                    <Self as MultiCurrency<T::AccountId>>::deposit(
+                        gn_currency_id,
+                        &fren,
+                        amount_in_token,
+                    )?;
                     Some(gn_currency_id)
                 }
             };

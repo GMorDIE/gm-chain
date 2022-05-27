@@ -58,7 +58,7 @@ use scale_info::TypeInfo;
 use sp_runtime::{
     traits::{
         AtLeast32BitUnsigned, Bounded, CheckedAdd, CheckedSub, MaybeSerializeDeserialize, Member,
-        Saturating, StaticLookup, Zero,
+        One, Saturating, StaticLookup, Zero,
     },
     ArithmeticError, DispatchError, DispatchResult, RuntimeDebug,
 };
@@ -267,6 +267,8 @@ pub mod module {
         DeadAccount,
         // Number of named reserves exceed `T::MaxReserves`
         TooManyReserves,
+
+        OnlyOneGMAtATimeSer,
     }
 
     #[pallet::event]
@@ -958,6 +960,8 @@ impl<T: Config> Pallet<T> {
         if amount.is_zero() || from == to {
             return Ok(());
         }
+
+        ensure!(amount.is_one(), Error::<T>::OnlyOneGMAtATimeSer);
 
         Self::try_mutate_account(to, currency_id, |to_account, _existed| -> DispatchResult {
             Self::try_mutate_account(

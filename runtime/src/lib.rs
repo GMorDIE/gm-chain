@@ -28,7 +28,9 @@ use sp_version::RuntimeVersion;
 use codec::{Decode, Encode, MaxEncodedLen};
 use frame_support::{
     construct_runtime, parameter_types,
-    traits::{Contains, Currency, Everything, Imbalance, OnUnbalanced},
+    traits::{
+        ConstBool, ConstU128, ConstU32, Contains, Currency, Everything, Imbalance, OnUnbalanced,
+    },
     weights::{
         constants::WEIGHT_PER_SECOND, ConstantMultiplier, DispatchClass, Weight,
         WeightToFeeCoefficient, WeightToFeeCoefficients, WeightToFeePolynomial,
@@ -37,7 +39,7 @@ use frame_support::{
 };
 use frame_system::{
     limits::{BlockLength, BlockWeights},
-    EnsureRoot,
+    EnsureRoot, EnsureSigned,
 };
 use orml_traits::parameter_type_with_key;
 use scale_info::TypeInfo;
@@ -57,9 +59,6 @@ use weights::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight};
 // XCM Imports
 use xcm::latest::prelude::BodyId;
 use xcm_executor::XcmExecutor;
-
-/// Import the template pallet.
-pub use pallet_template;
 
 /// Alias to 512-bit hash when used in the context of a transaction signature on the chain.
 pub type Signature = MultiSignature;
@@ -190,7 +189,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 /// up by `pallet_aura` to implement `fn slot_duration()`.
 ///
 /// Change this to adjust the block time.
-pub const MILLISECS_PER_BLOCK: u64 = 12000;
+pub const MILLISECS_PER_BLOCK: u64 = 9000;
 
 // NOTE: Currently it is not possible to change the slot duration after the chain has started.
 //       Attempting to do so will brick block production.
@@ -436,6 +435,7 @@ impl orml_currencies::Config for Runtime {
     type GetGNCurrencyId = GetGNCurrencyId;
 
     type PeriodLength = PeriodLength;
+    type TreasuryAccount = TreasuryAccount;
 }
 
 parameter_types! {
@@ -559,11 +559,6 @@ impl pallet_collator_selection::Config for Runtime {
     type WeightInfo = ();
 }
 
-/// Configure the pallet template in pallets/template.
-impl pallet_template::Config for Runtime {
-    type Event = Event;
-}
-
 impl pallet_sudo::Config for Runtime {
     type Event = Event;
     type Call = Call;
@@ -596,6 +591,30 @@ impl pallet_treasury::Config for Runtime {
     type ProposalBondMaximum = ();
 }
 
+parameter_types! {
+    pub const InitializationPayment: Perbill = Perbill::from_percent(30);
+    pub const RelaySignaturesThreshold: Perbill = Perbill::from_percent(100);
+    pub const SignatureNetworkIdentifier:  &'static [u8] = b"gm-";
+}
+
+impl pallet_crowdloan_rewards::Config for Runtime {
+    type Event = Event;
+    type Initialized = ConstBool<false>;
+    type InitializationPayment = InitializationPayment;
+    type MaxInitContributors = ConstU32<500>;
+    type MinimumReward = ConstU128<0>;
+    type RewardCurrency = Balances;
+    type RelayChainAccountId = [u8; 32];
+    type RewardAddressAssociateOrigin = EnsureSigned<Self::AccountId>;
+    type RewardAddressChangeOrigin = EnsureSigned<Self::AccountId>;
+    type RewardAddressRelayVoteThreshold = RelaySignaturesThreshold;
+    type SignatureNetworkIdentifier = SignatureNetworkIdentifier;
+    type VestingBlockNumber = cumulus_primitives_core::relay_chain::BlockNumber;
+    type VestingBlockProvider =
+        cumulus_pallet_parachain_system::RelaychainBlockNumberProvider<Self>;
+    type WeightInfo = pallet_crowdloan_rewards::weights::SubstrateWeight<Runtime>;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
     pub enum Runtime where
@@ -618,6 +637,7 @@ construct_runtime!(
         TransactionPayment: pallet_transaction_payment::{Pallet, Storage} = 11,
         Tokens: orml_tokens::{Pallet, Storage, Event<T>, Config<T>} = 12,
         Currencies: orml_currencies::{Pallet, Call, Storage, Event<T>} = 13,
+        CrowdloanRewards: pallet_crowdloan_rewards::{Pallet, Call, Config<T>, Storage, Event<T>} = 15,
 
         // Collator support. The order of these 4 are important and shall not change.
         Authorship: pallet_authorship::{Pallet, Call, Storage} = 20,
@@ -631,9 +651,6 @@ construct_runtime!(
         PolkadotXcm: pallet_xcm::{Pallet, Call, Event<T>, Origin, Config} = 31,
         CumulusXcm: cumulus_pallet_xcm::{Pallet, Event<T>, Origin} = 32,
         DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 33,
-
-        // Template
-        TemplatePallet: pallet_template::{Pallet, Call, Storage, Event<T>}  = 40,
     }
 );
 
