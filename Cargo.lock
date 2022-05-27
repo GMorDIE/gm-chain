@@ -3062,13 +3062,14 @@ dependencies = [
  "pallet-authorship",
  "pallet-balances",
  "pallet-collator-selection",
- "pallet-crowdloan-rewards",
+ "pallet-identity",
  "pallet-session",
  "pallet-sudo",
  "pallet-timestamp",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
  "pallet-treasury",
+ "pallet-utility",
  "pallet-xcm",
  "parachain-info",
  "parity-scale-codec",
@@ -5132,7 +5133,7 @@ dependencies = [
 [[package]]
 name = "orml-traits"
 version = "0.4.1-dev"
-source = "git+https://github.com/open-web3-stack/open-runtime-module-library?branch=master#e65be8747f4c5245721d281c93746fa17a06f924"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?branch=master#070457de18d26d2daed6abdfa57d8a951a525605"
 dependencies = [
  "frame-support",
  "impl-trait-for-tuples",
@@ -5150,7 +5151,7 @@ dependencies = [
 [[package]]
 name = "orml-utilities"
 version = "0.4.1-dev"
-source = "git+https://github.com/open-web3-stack/open-runtime-module-library?branch=master#e65be8747f4c5245721d281c93746fa17a06f924"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?branch=master#070457de18d26d2daed6abdfa57d8a951a525605"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -5453,31 +5454,6 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
-]
-
-[[package]]
-name = "pallet-crowdloan-rewards"
-version = "0.6.0"
-dependencies = [
- "cumulus-pallet-parachain-system",
- "cumulus-primitives-core",
- "cumulus-primitives-parachain-inherent",
- "cumulus-test-relay-sproof-builder",
- "ed25519-dalek",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "pallet-balances",
- "pallet-utility",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
- "sp-trie",
 ]
 
 [[package]]
@@ -11331,7 +11307,7 @@ version = "1.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "97fee6b57c6a41524a810daee9286c02d7752c4253064d0b05472833a438f675"
 dependencies = [
- "cfg-if 1.0.0",
+ "cfg-if 0.1.10",
  "digest 0.10.3",
  "rand 0.8.5",
  "static_assertions",

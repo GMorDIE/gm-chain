@@ -289,6 +289,5 @@ fn testnet_genesis(
         },
         tokens: Default::default(),
         treasury: Default::default(),
-        crowdloan_rewards: Default::default(),
     }
 }

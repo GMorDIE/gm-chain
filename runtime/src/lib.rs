@@ -28,9 +28,7 @@ use sp_version::RuntimeVersion;
 use codec::{Decode, Encode, MaxEncodedLen};
 use frame_support::{
     construct_runtime, parameter_types,
-    traits::{
-        ConstBool, ConstU128, ConstU32, Contains, Currency, Everything, Imbalance, OnUnbalanced,
-    },
+    traits::{Contains, Currency, Everything, Imbalance, OnUnbalanced},
     weights::{
         constants::WEIGHT_PER_SECOND, ConstantMultiplier, DispatchClass, Weight,
         WeightToFeeCoefficient, WeightToFeeCoefficients, WeightToFeePolynomial,
@@ -39,7 +37,7 @@ use frame_support::{
 };
 use frame_system::{
     limits::{BlockLength, BlockWeights},
-    EnsureRoot, EnsureSigned,
+    EnsureRoot,
 };
 use orml_traits::parameter_type_with_key;
 use scale_info::TypeInfo;
@@ -592,27 +590,34 @@ impl pallet_treasury::Config for Runtime {
 }
 
 parameter_types! {
-    pub const InitializationPayment: Perbill = Perbill::from_percent(30);
-    pub const RelaySignaturesThreshold: Perbill = Perbill::from_percent(100);
-    pub const SignatureNetworkIdentifier:  &'static [u8] = b"gm-";
+    pub BasicDeposit: Balance = 1000 * UNIT;
+    pub FieldDeposit: Balance = 500 * UNIT;
+    pub const MaxAdditionalFields: u32 = 32;
+    pub const MaxRegistrars: u32 = 8;
+    pub const MaxSubAccounts: u32 = 32;
+    pub SubAccountDeposit: Balance = 2000 * UNIT;
 }
 
-impl pallet_crowdloan_rewards::Config for Runtime {
+impl pallet_identity::Config for Runtime {
+    type BasicDeposit = BasicDeposit;
+    type Currency = Balances;
     type Event = Event;
-    type Initialized = ConstBool<false>;
-    type InitializationPayment = InitializationPayment;
-    type MaxInitContributors = ConstU32<500>;
-    type MinimumReward = ConstU128<0>;
-    type RewardCurrency = Balances;
-    type RelayChainAccountId = [u8; 32];
-    type RewardAddressAssociateOrigin = EnsureSigned<Self::AccountId>;
-    type RewardAddressChangeOrigin = EnsureSigned<Self::AccountId>;
-    type RewardAddressRelayVoteThreshold = RelaySignaturesThreshold;
-    type SignatureNetworkIdentifier = SignatureNetworkIdentifier;
-    type VestingBlockNumber = cumulus_primitives_core::relay_chain::BlockNumber;
-    type VestingBlockProvider =
-        cumulus_pallet_parachain_system::RelaychainBlockNumberProvider<Self>;
-    type WeightInfo = pallet_crowdloan_rewards::weights::SubstrateWeight<Runtime>;
+    type FieldDeposit = FieldDeposit;
+    type ForceOrigin = EnsureRoot<AccountId>;
+    type MaxAdditionalFields = MaxAdditionalFields;
+    type MaxRegistrars = MaxRegistrars;
+    type MaxSubAccounts = MaxSubAccounts;
+    type RegistrarOrigin = EnsureRoot<AccountId>;
+    type Slashed = Treasury;
+    type SubAccountDeposit = SubAccountDeposit;
+    type WeightInfo = pallet_identity::weights::SubstrateWeight<Runtime>;
+}
+
+impl pallet_utility::Config for Runtime {
+    type Event = Event;
+    type Call = Call;
+    type PalletsOrigin = OriginCaller;
+    type WeightInfo = pallet_utility::weights::SubstrateWeight<Runtime>;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -631,13 +636,14 @@ construct_runtime!(
         ParachainInfo: parachain_info::{Pallet, Storage, Config} = 3,
         Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>} = 4,
         Treasury: pallet_treasury::{Pallet, Call, Storage, Config, Event<T>} = 5,
+        Identity: pallet_identity::{Pallet, Call, Storage, Event<T>} = 6,
+        Utility: pallet_utility::{Pallet, Call, Event} = 7,
 
         // Monetary stuff.
         Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 10,
         TransactionPayment: pallet_transaction_payment::{Pallet, Storage} = 11,
         Tokens: orml_tokens::{Pallet, Storage, Event<T>, Config<T>} = 12,
         Currencies: orml_currencies::{Pallet, Call, Storage, Event<T>} = 13,
-        CrowdloanRewards: pallet_crowdloan_rewards::{Pallet, Call, Config<T>, Storage, Event<T>} = 15,
 
         // Collator support. The order of these 4 are important and shall not change.
         Authorship: pallet_authorship::{Pallet, Call, Storage} = 20,
