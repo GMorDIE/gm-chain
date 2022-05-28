@@ -27,6 +27,7 @@ fn load_spec(id: &str) -> std::result::Result<Box<dyn sc_service::ChainSpec>, St
     Ok(match id {
         "solo-dev" => Box::new(chain_spec::solo_dev_config()),
         "dev" => Box::new(chain_spec::development_config()),
+        "rococo-parachain" => Box::new(chain_spec::rococo_parachain()),
         "template-rococo" => Box::new(chain_spec::local_testnet_config()),
         "" | "local" => Box::new(chain_spec::local_testnet_config()),
         path => Box::new(chain_spec::ChainSpec::from_json_file(
@@ -144,6 +145,7 @@ pub fn run() -> Result<()> {
     let cli = Cli::from_args();
 
     match &cli.subcommand {
+        Some(Subcommand::Key(cmd)) => cmd.run(&cli),
         Some(Subcommand::BuildSpec(cmd)) => {
             let runner = cli.create_runner(cmd)?;
             runner.sync_run(|config| cmd.run(config.chain_spec, config.network))

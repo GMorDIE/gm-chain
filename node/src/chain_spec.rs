@@ -238,6 +238,52 @@ pub fn local_testnet_config() -> ChainSpec {
     )
 }
 
+pub fn rococo_parachain() -> ChainSpec {
+    // Give your base currency a unit name and decimal places
+    let mut properties = sc_chain_spec::Properties::new();
+    properties.insert("tokenSymbol".into(), "FREN".into());
+    properties.insert("tokenDecimals".into(), 12u32.into());
+    properties.insert("ss58Format".into(), 42u32.into());
+
+    ChainSpec::from_genesis(
+        // Name
+        "GM Parachain",
+        // ID
+        "gm_parachain",
+        ChainType::Local,
+        move || {
+            testnet_genesis(
+                AccountId::new([
+                    252, 8, 167, 29, 53, 254, 131, 186, 33, 113, 32, 40, 249, 89, 109, 42, 245,
+                    160, 250, 205, 154, 252, 153, 74, 242, 223, 10, 101, 137, 236, 29, 72,
+                ]),
+                // initial collators.
+                vec![],
+                vec![AccountId::new([
+                    252, 8, 167, 29, 53, 254, 131, 186, 33, 113, 32, 40, 249, 89, 109, 42, 245,
+                    160, 250, 205, 154, 252, 153, 74, 242, 223, 10, 101, 137, 236, 29, 72,
+                ])],
+                2000u32.into(),
+            )
+        },
+        // Bootnodes
+        Vec::new(),
+        // Telemetry
+        None,
+        // Protocol ID
+        Some("gm-parachain"),
+        // Fork ID
+        None,
+        // Properties
+        Some(properties),
+        // Extensions
+        Extensions {
+            relay_chain: "rococo-local".into(), // You MUST set this to the correct network!
+            para_id: 2000,
+        },
+    )
+}
+
 fn testnet_genesis(
     root_key: AccountId,
     invulnerables: Vec<(AccountId, AuraId)>,
