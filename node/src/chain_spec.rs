@@ -1,9 +1,10 @@
 use cumulus_primitives_core::ParaId;
 use gm_chain_runtime::{AccountId, AuraId, Signature, EXISTENTIAL_DEPOSIT};
+use hex_literal::hex;
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sc_service::ChainType;
 use serde::{Deserialize, Serialize};
-use sp_core::{sr25519, Pair, Public};
+use sp_core::{crypto::UncheckedInto, sr25519, Pair, Public};
 use sp_runtime::traits::{IdentifyAccount, Verify};
 
 /// Specialized `ChainSpec` for the normal parachain runtime.
@@ -119,8 +120,11 @@ pub fn development_config() -> ChainSpec {
 pub fn solo_dev_config() -> ChainSpec {
     // Give your base currency a unit name and decimal places
     let mut properties = sc_chain_spec::Properties::new();
-    properties.insert("tokenSymbol".into(), "FREN".into());
-    properties.insert("tokenDecimals".into(), 12u32.into());
+    properties.insert(
+        "tokenSymbol".into(),
+        vec!["FREN".to_string(), "GM".to_string(), "GN".to_string()].into(),
+    );
+    properties.insert("tokenDecimals".into(), vec![12u32, 0u32, 0u32].into());
     properties.insert("ss58Format".into(), 42u32.into());
 
     ChainSpec::from_genesis(
@@ -156,7 +160,7 @@ pub fn solo_dev_config() -> ChainSpec {
                     get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
                     get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
                 ],
-                1000.into(),
+                1000u32.into(),
             )
         },
         // Bootnodes
@@ -167,7 +171,7 @@ pub fn solo_dev_config() -> ChainSpec {
         None,
         // Properties
         None,
-        None,
+        Some(properties),
         // Extensions
         Extensions {
             relay_chain: "dev".into(), // TODO: You MUST set this to the correct network!
@@ -241,8 +245,11 @@ pub fn local_testnet_config() -> ChainSpec {
 pub fn rococo_parachain() -> ChainSpec {
     // Give your base currency a unit name and decimal places
     let mut properties = sc_chain_spec::Properties::new();
-    properties.insert("tokenSymbol".into(), "FREN".into());
-    properties.insert("tokenDecimals".into(), 12u32.into());
+    properties.insert(
+        "tokenSymbol".into(),
+        vec!["FREN".to_string(), "GM".to_string(), "GN".to_string()].into(),
+    );
+    properties.insert("tokenDecimals".into(), vec![12u32, 0u32, 0u32].into());
     properties.insert("ss58Format".into(), 42u32.into());
 
     ChainSpec::from_genesis(
@@ -253,16 +260,25 @@ pub fn rococo_parachain() -> ChainSpec {
         ChainType::Local,
         move || {
             testnet_genesis(
-                AccountId::new([
-                    252, 8, 167, 29, 53, 254, 131, 186, 33, 113, 32, 40, 249, 89, 109, 42, 245,
-                    160, 250, 205, 154, 252, 153, 74, 242, 223, 10, 101, 137, 236, 29, 72,
-                ]),
+                hex!["fc08a71d35fe83ba21712028f9596d2af5a0facd9afc994af2df0a6589ec1d48"].into(),
                 // initial collators.
-                vec![],
-                vec![AccountId::new([
-                    252, 8, 167, 29, 53, 254, 131, 186, 33, 113, 32, 40, 249, 89, 109, 42, 245,
-                    160, 250, 205, 154, 252, 153, 74, 242, 223, 10, 101, 137, 236, 29, 72,
-                ])],
+                vec![
+                    (
+                        hex!["a6da8e8bbca016f9774858fa621feefd641fd71fddd2dc2f5183f2af339ab528"]
+                            .into(),
+                        hex!["a6da8e8bbca016f9774858fa621feefd641fd71fddd2dc2f5183f2af339ab528"]
+                            .unchecked_into(),
+                    ),
+                    (
+                        hex!["3af28faabd985dfe6a2ed04b2a9b1c3d85cecec96daad616394b46f731d8ec4b"]
+                            .into(),
+                        hex!["3af28faabd985dfe6a2ed04b2a9b1c3d85cecec96daad616394b46f731d8ec4b"]
+                            .unchecked_into(),
+                    ),
+                ],
+                vec![
+                    hex!["fc08a71d35fe83ba21712028f9596d2af5a0facd9afc994af2df0a6589ec1d48"].into(),
+                ],
                 2000u32.into(),
             )
         },
@@ -278,7 +294,7 @@ pub fn rococo_parachain() -> ChainSpec {
         Some(properties),
         // Extensions
         Extensions {
-            relay_chain: "rococo-local".into(), // You MUST set this to the correct network!
+            relay_chain: "rococo".into(), // You MUST set this to the correct network!
             para_id: 2000,
         },
     )

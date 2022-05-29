@@ -2984,6 +2984,7 @@ dependencies = [
  "frame-benchmarking",
  "frame-benchmarking-cli",
  "gm-chain-runtime",
+ "hex",
  "hex-literal",
  "jsonrpc-core",
  "jsonrpsee",

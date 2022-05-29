@@ -1,7 +1,7 @@
 {
   "name": "GM Rococo Parachain",
   "id": "gm_rococo",
-  "chainType": "Local",
+  "chainType": "Live",
   "bootNodes": [],
   "telemetryEndpoints": [
     [

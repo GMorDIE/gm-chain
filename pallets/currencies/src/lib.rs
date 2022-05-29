@@ -73,6 +73,8 @@ mod weights;
 pub use module::*;
 pub use weights::WeightInfo;
 
+pub const UNIT: u128 = 1000000000000u128;
+
 #[frame_support::pallet]
 pub mod module {
     use super::*;
@@ -140,8 +142,10 @@ pub mod module {
         BalanceTooLow,
         /// Deposit result is not expected
         DepositFailed,
+        /// Ser, you can only burn up to 10 FREN at a time.
+        NoMoreThanAHundgeFRENAtATimeSer,
 
-        NotAWholeUnit,
+        NotAMultipleOfTen,
     }
 
     #[pallet::event]
@@ -255,11 +259,16 @@ pub mod module {
             let fren = ensure_signed(origin)?;
 
             ensure!(
-                (amount % (BalanceOf::<T>::from(1000000000000u128))).is_zero(),
-                Error::<T>::NotAWholeUnit
+                (amount % (BalanceOf::<T>::from(10u128 * UNIT))).is_zero(),
+                Error::<T>::NotAMultipleOfTen
             );
 
-            let amount_in_token = amount / BalanceOf::<T>::from(1000000000000u128);
+            ensure!(
+                amount <= BalanceOf::<T>::from(100u128 * UNIT),
+                Error::<T>::NoMoreThanAHundgeFRENAtATimeSer
+            );
+
+            let amount_in_token = amount / BalanceOf::<T>::from(10u128 * UNIT);
 
             // Burning $FREN
             T::NativeCurrency::withdraw(&fren, amount)?;
