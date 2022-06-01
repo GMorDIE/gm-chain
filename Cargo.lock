@@ -3059,6 +3059,7 @@ dependencies = [
  "orml-currencies",
  "orml-tokens",
  "orml-traits",
+ "orml-xcm",
  "pallet-aura",
  "pallet-authorship",
  "pallet-balances",
@@ -5134,7 +5135,7 @@ dependencies = [
 [[package]]
 name = "orml-traits"
 version = "0.4.1-dev"
-source = "git+https://github.com/open-web3-stack/open-runtime-module-library?branch=master#070457de18d26d2daed6abdfa57d8a951a525605"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?branch=master#3576772a896e039abf07c57e1efa305e6c0cddb0"
 dependencies = [
  "frame-support",
  "impl-trait-for-tuples",
@@ -5152,7 +5153,7 @@ dependencies = [
 [[package]]
 name = "orml-utilities"
 version = "0.4.1-dev"
-source = "git+https://github.com/open-web3-stack/open-runtime-module-library?branch=master#070457de18d26d2daed6abdfa57d8a951a525605"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?branch=master#3576772a896e039abf07c57e1efa305e6c0cddb0"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -5161,6 +5162,20 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
+]
+
+[[package]]
+name = "orml-xcm"
+version = "0.4.1-dev"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?branch=master#3576772a896e039abf07c57e1efa305e6c0cddb0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "pallet-xcm",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+ "xcm",
 ]
 
 [[package]]
