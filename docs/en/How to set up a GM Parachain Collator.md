@@ -39,8 +39,6 @@ Type Y to proceed.
 
  ``cd``
 
- ``sudo chmod +x /usr/local/bin/gm_chain``
-
  ``sudo chown root:root /usr/local/bin/gm_chain``
 
  You need to compile the code, this will take quite a while depending on your system (30+ minutes is normal):
