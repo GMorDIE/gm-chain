@@ -27,7 +27,10 @@ use sp_version::RuntimeVersion;
 
 use codec::{Decode, Encode, MaxEncodedLen};
 use frame_support::{
-    construct_runtime, parameter_types,
+    construct_runtime,
+    dispatch::RawOrigin,
+    pallet_prelude::EnsureOrigin,
+    parameter_types,
     traits::{Contains, Currency, Everything, Imbalance, OnUnbalanced},
     weights::{
         constants::WEIGHT_PER_SECOND, ConstantMultiplier, DispatchClass, Weight,
@@ -628,6 +631,56 @@ impl orml_xcm::Config for Runtime {
     type SovereignOrigin = EnsureRoot<AccountId>;
 }
 
+parameter_types! {
+    pub const MinVestedTransfer: Balance = UNIT * 1;
+    pub const MaxVestingSchedules: u32 = 50u32;
+}
+
+parameter_types! {
+      pub GMAccounts: Vec<AccountId> = vec![
+          // GM Root Account (gMW3W6wkNEPxjELfucN4ejboXDxtNQ9rL1Txz1GBpVmweBGzP)
+          hex_literal::hex!["5a5e219566f3f52fcf73ffd8c41aca1d8e3bf7dc82e03c2a8504c4e517c62538"].into(),
+          // GM Treasury Pallet Account
+          TreasuryPalletId::get().into_account_truncating(),
+      ];
+}
+
+pub struct EnsureGMAccount;
+impl EnsureOrigin<Origin> for EnsureGMAccount {
+    type Success = AccountId;
+
+    fn try_origin(o: Origin) -> Result<Self::Success, Origin> {
+        Into::<Result<RawOrigin<AccountId>, Origin>>::into(o).and_then(|o| match o {
+            RawOrigin::Signed(caller) => {
+                if GMAccounts::get().contains(&caller) {
+                    Ok(caller)
+                } else {
+                    Err(Origin::from(Some(caller)))
+                }
+            }
+            r => Err(Origin::from(r)),
+        })
+    }
+
+    #[cfg(feature = "runtime-benchmarks")]
+    fn successful_origin() -> Origin {
+        let zero_account_id =
+            AccountId::decode(&mut sp_runtime::traits::TrailingZeroInput::zeroes())
+                .expect("infinite length input; no invalid inputs for type; qed");
+        Origin::from(RawOrigin::Signed(zero_account_id))
+    }
+}
+
+impl orml_vesting::Config for Runtime {
+    type Event = Event;
+    type Currency = Balances;
+    type MinVestedTransfer = MinVestedTransfer;
+    type VestedTransferOrigin = EnsureGMAccount;
+    type WeightInfo = ();
+    type MaxVestingSchedules = MaxVestingSchedules;
+    type BlockNumberProvider = System;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
     pub enum Runtime where
@@ -667,6 +720,7 @@ construct_runtime!(
         DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 33,
 
         OrmlXcm: orml_xcm = 50,
+        CarrotOnAStick: orml_vesting::{Pallet, Storage, Call, Event<T>, Config<T>} = 51,
     }
 );
 
