@@ -37,6 +37,11 @@ jobs:
       with:
         submodules: true
           
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly-2022-05-01
+        target: wasm32-unknown-unknown
+
     - name: Build binary
       run: cargo build --release
       
