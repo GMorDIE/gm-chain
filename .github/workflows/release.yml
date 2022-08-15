@@ -27,8 +27,8 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - macos-latest
-          - windows-latest
+#          - macos-latest
+#          - windows-latest
     runs-on: ${{ matrix.os }}
     steps:
 
@@ -135,23 +135,21 @@ jobs:
         with:
           name: gm-binary-ubuntu-latest
           
-      - name: Download mac binary
-        uses: actions/download-artifact@v3
-        with:
-          name: gm-binary-macos-latest
+#      - name: Download mac binary
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: gm-binary-macos-latest
           
-      - name: Download windows binary
-        uses: actions/download-artifact@v3
-        with:
-          name: gm-binary-windows-latest
+#      - name: Download windows binary
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: gm-binary-windows-latest
 
       - name: Publish github release
         uses: softprops/action-gh-release@v1
         with:
           files: |
             gm-chain-node-ubuntu-latest
-            gm-chain-node-macos-latest
-            gm-chain-node-windows-latest
             ${{ steps.srtool_build.outputs.wasm }}
             ${{ steps.srtool_build.outputs.wasm_compressed }}
           body_path: ".github/release-template.md"
