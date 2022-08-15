@@ -2,9 +2,6 @@ name: Publish Release
 
 # This action is based on InvArch's release action: https://github.com/InvArch/InvArch-Node/blob/main/.github/workflows/release.yml
 
-env:
-  SUBWASM_VERSION: 0.18.0
-
 on:
   workflow_dispatch:
     inputs:
@@ -21,9 +18,13 @@ on:
         description: 'Release version (e.g. v0.1.0)'
         required: true
 
+env:
+  SUBWASM_VERSION: 0.18.0
+  SCOPE: ${{ github.event.inputs.scope }}
+
 jobs:
   build_binary:
-    if: ${{ github.event.inputs.tag == 'full' }}
+    if: ${{ env.SCOPE == 'full' }}
     strategy:
       matrix:
         os:
