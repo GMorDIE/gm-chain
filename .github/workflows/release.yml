@@ -61,7 +61,7 @@ jobs:
         env:
           BUILD_OPTS: ""
         with:
-          chain: gm-chain-runtime
+          chain: gm-chain
           runtime_dir: runtime
 
       # Output the build summary
