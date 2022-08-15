@@ -8,15 +8,6 @@ env:
 on:
   workflow_dispatch:
     inputs:
-      scope:
-        description: Release scope (default = full)
-        required: true
-        default: full
-        type: choice
-        options:
-          - client
-          - runtime
-          - full
       tag:
         description: 'Release version (e.g. v0.1.0)'
         required: true
@@ -49,7 +40,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: gm-binary-${{ matrix.os }}
-        path: target/release/gm-chain-node-${{ matrix.os }}
+        path: target/release/gm-chain-node
         
         
   release:
@@ -154,7 +145,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            gm-chain-node-ubuntu-latest
+            gm-chain-node
             ${{ steps.srtool_build.outputs.wasm }}
             ${{ steps.srtool_build.outputs.wasm_compressed }}
           body_path: ".github/release-template.md"
