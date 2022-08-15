@@ -23,7 +23,6 @@ on:
 
 jobs:
   build_binary:
-    if: ${{ github.event.inputs.scope == full }}
     strategy:
       matrix:
         os:
@@ -126,19 +125,16 @@ jobs:
           path: .github/release-template.md
           
       - name: Download linux binary
-        if: ${{ github.event.inputs.tag == 'full' }}
         uses: actions/download-artifact@v3
         with:
           name: gm-binary-ubuntu-latest
           
       - name: Download mac binary
-        if: ${{ github.event.inputs.tag == 'full' }}
         uses: actions/download-artifact@v3
         with:
           name: gm-binary-macos-latest
           
       - name: Download windows binary
-        if: ${{ github.event.inputs.tag == 'full' }}
         uses: actions/download-artifact@v3
         with:
           name: gm-binary-windows-latest
