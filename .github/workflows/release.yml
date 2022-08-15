@@ -1,0 +1,157 @@
+name: Publish Release
+
+# This action is based on InvArch's release action: https://github.com/InvArch/InvArch-Node/blob/main/.github/workflows/release.yml
+
+env:
+  SUBWASM_VERSION: 0.18.0
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: Release scope (default = full)
+        required: true
+        default: full
+        type: choice
+        options:
+          - client
+          - runtime
+          - full
+      tag:
+        description: 'Release version (e.g. v0.1.0)'
+        required: true
+
+jobs:
+  build_binary:
+    if: ${{ github.event.inputs.tag == 'full' }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Build binary
+      run: cargo build --release
+      
+    - name: Upload binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: gm-binary-${{ matrix.os }}
+        path: target/release/gm-chain-node-${{ matrix.os }}
+        
+        
+  release:
+    name: Build and publish GM Runtime
+    needs: build_binary
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the codebase
+      - name: Checkout Codebase
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      # Build WASM with Substrate Runtime Tool
+      - name: Srtool build
+        id: srtool_build
+        uses: chevdor/srtool-actions@v0.4.0
+        env:
+          BUILD_OPTS: ""
+        with:
+          chain: gm-chain-runtime
+          runtime_dir: runtime
+
+      # Output the build summary
+      - name: Build Summary
+        run: |
+          echo '${{ steps.srtool_build.outputs.json }}' | jq . > gm-srtool-digest.json
+          cat gm-srtool-digest.json
+          echo "Runtime location: ${{ steps.srtool_build.outputs.wasm }}"
+      # install subwasm
+      - name: Install subwasm ${{ env.SUBWASM_VERSION }}
+        run: |
+          wget https://github.com/chevdor/subwasm/releases/download/v${{ env.SUBWASM_VERSION }}/subwasm_linux_amd64_v${{ env.SUBWASM_VERSION }}.deb
+          sudo dpkg -i subwasm_linux_amd64_v${{ env.SUBWASM_VERSION }}.deb
+          subwasm --version
+      # Display information for wasm
+      - name: Extract metadata
+        run: |
+          subwasm  --json info ${{ steps.srtool_build.outputs.wasm }} > gm-info.json
+          subwasm info ${{ steps.srtool_build.outputs.wasm }} > gm-info.txt
+          cat gm-info.txt
+          subwasm  --json info ${{ steps.srtool_build.outputs.wasm_compressed }} > gm-subwam-info.json
+          subwasm info ${{ steps.srtool_build.outputs.wasm_compressed }} > gm-subwam-info.txt
+          cat gm-subwam-info.txt
+          
+      - name: Archive Artifacts for GM
+        uses: actions/upload-artifact@v2
+        with:
+          name: gm-runtime
+          path: |
+            ${{ steps.srtool_build.outputs.wasm }}
+            ${{ steps.srtool_build.outputs.wasm_compressed }}
+            gm-srtool-digest.json
+            gm-metadata.json
+            gm-metadata.txt
+            gm-subwam-info.json
+            gm-subwam-info.txt
+            gm-diff.txt
+      - name: Create Tag
+        uses: negz/create-tag@v1
+        with:
+          version: ${{ github.event.inputs.tag }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate template data
+        run: |
+          TAG=${{ github.event.inputs.tag }}
+          SRTOOL_DETAILS=$(cat gm-srtool-digest.json)
+          SUBWASM_DETAILS=$(cat gm-subwam-info.json)
+          echo 'Template data:'
+          jq -n \
+            --arg tag "$TAG" \
+            --arg srtool_details "$SRTOOL_DETAILS" \
+            --arg subwasm_details "$SUBWASM_DETAILS" \
+            '{
+              tag: $tag,
+              srtool_details: $srtool_details,
+              subwasm_details: $subwasm_details
+            }' | tee template_data.json
+      - name: Render release page
+        uses: jayamanikharyono/jinja-action@v0.1
+        with:
+          datafile: template_data.json
+          path: .github/release-template.md
+          
+      - name: Download linux binary
+        if: ${{ github.event.inputs.tag == 'full' }}
+        uses: actions/download-artifact@v3
+        with:
+          name: gm-binary-ubuntu-latest
+          
+      - name: Download mac binary
+        if: ${{ github.event.inputs.tag == 'full' }}
+        uses: actions/download-artifact@v3
+        with:
+          name: gm-binary-macos-latest
+          
+      - name: Download windows binary
+        if: ${{ github.event.inputs.tag == 'full' }}
+        uses: actions/download-artifact@v3
+        with:
+          name: gm-binary-windows-latest
+
+      - name: Publish github release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            gm-chain-node-ubuntu-latest
+            gm-chain-node-macos-latest
+            gm-chain-node-windows-latest
+            ${{ steps.srtool_build.outputs.wasm }}
+            ${{ steps.srtool_build.outputs.wasm_compressed }}
+          body_path: ".github/release-template.md"
+          tag_name: ${{ github.event.inputs.tag }}
+          token: ${{ secrets.GITHUB_TOKEN }}
