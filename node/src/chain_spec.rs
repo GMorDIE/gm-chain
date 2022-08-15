@@ -66,7 +66,7 @@ pub fn development_config() -> ChainSpec {
     let mut properties = sc_chain_spec::Properties::new();
     properties.insert("tokenSymbol".into(), "UNIT".into());
     properties.insert("tokenDecimals".into(), 12.into());
-    properties.insert("ss58Format".into(), 42.into());
+    properties.insert("ss58Format".into(), 7013.into());
 
     ChainSpec::from_genesis(
         // Name
@@ -125,7 +125,7 @@ pub fn solo_dev_config() -> ChainSpec {
         vec!["FREN".to_string(), "GM".to_string(), "GN".to_string()].into(),
     );
     properties.insert("tokenDecimals".into(), vec![12u32, 0u32, 0u32].into());
-    properties.insert("ss58Format".into(), 42u32.into());
+    properties.insert("ss58Format".into(), 7013u32.into());
 
     ChainSpec::from_genesis(
         // Name
@@ -185,7 +185,7 @@ pub fn local_testnet_config() -> ChainSpec {
     let mut properties = sc_chain_spec::Properties::new();
     properties.insert("tokenSymbol".into(), "UNIT".into());
     properties.insert("tokenDecimals".into(), 12.into());
-    properties.insert("ss58Format".into(), 42.into());
+    properties.insert("ss58Format".into(), 7013u32.into());
 
     ChainSpec::from_genesis(
         // Name
@@ -250,7 +250,7 @@ pub fn rococo_parachain() -> ChainSpec {
         vec!["FREN".to_string(), "GM".to_string(), "GN".to_string()].into(),
     );
     properties.insert("tokenDecimals".into(), vec![12u32, 0u32, 0u32].into());
-    properties.insert("ss58Format".into(), 42u32.into());
+    properties.insert("ss58Format".into(), 7013u32.into());
 
     ChainSpec::from_genesis(
         // Name
@@ -351,5 +351,6 @@ fn testnet_genesis(
         },
         tokens: Default::default(),
         treasury: Default::default(),
+        carrot_on_a_stick: Default::default(),
     }
 }

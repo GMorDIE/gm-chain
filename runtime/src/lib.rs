@@ -9,6 +9,7 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 mod weights;
 pub mod xcm_config;
 
+use cumulus_pallet_parachain_system::RelayNumberStrictlyIncreases;
 use orml_tokens::GetOpposite;
 use smallvec::smallvec;
 use sp_api::impl_runtime_apis;
@@ -19,7 +20,6 @@ use sp_runtime::{
     transaction_validity::{TransactionSource, TransactionValidity},
     ApplyExtrinsicResult, MultiSignature,
 };
-
 use sp_std::prelude::*;
 #[cfg(feature = "std")]
 use sp_version::NativeVersion;
@@ -27,7 +27,10 @@ use sp_version::RuntimeVersion;
 
 use codec::{Decode, Encode, MaxEncodedLen};
 use frame_support::{
-    construct_runtime, parameter_types,
+    construct_runtime,
+    dispatch::RawOrigin,
+    pallet_prelude::EnsureOrigin,
+    parameter_types,
     traits::{Contains, Currency, Everything, Imbalance, OnUnbalanced},
     weights::{
         constants::WEIGHT_PER_SECOND, ConstantMultiplier, DispatchClass, Weight,
@@ -174,7 +177,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
     spec_name: create_runtime_str!("template-parachain"),
     impl_name: create_runtime_str!("template-parachain"),
     authoring_version: 1,
-    spec_version: 3,
+    spec_version: 4,
     impl_version: 0,
     apis: RUNTIME_API_VERSIONS,
     transaction_version: 1,
@@ -253,7 +256,7 @@ parameter_types! {
         })
         .avg_block_initialization(AVERAGE_ON_INITIALIZE_RATIO)
         .build_or_panic();
-    pub const SS58Prefix: u16 = 42;
+    pub const SS58Prefix: u16 = 7013;
 }
 
 // Configure FRAME pallets to include in runtime.
@@ -443,6 +446,14 @@ parameter_types! {
     pub TreasuryAccount: AccountId = TreasuryPalletId::get().into_account_truncating();
 }
 
+pub struct ToStakingPot;
+impl OnUnbalanced<NegativeImbalance> for ToStakingPot {
+    fn on_nonzero_unbalanced(amount: NegativeImbalance) {
+        let staking_pot = PotId::get().into_account_truncating();
+        Balances::resolve_creating(&staking_pot, amount);
+    }
+}
+
 type NegativeImbalance = <Balances as Currency<AccountId>>::NegativeImbalance;
 
 pub struct DealWithFees;
@@ -453,12 +464,17 @@ impl OnUnbalanced<NegativeImbalance> for DealWithFees {
                 // Merge with fee, for now we send everything to the treasury
                 tips.merge_into(&mut fees);
             }
-            Treasury::on_unbalanced(fees);
+
+            let (to_collators, to_treasury) = fees.ration(50, 50);
+
+            Treasury::on_unbalanced(to_treasury);
+            ToStakingPot::on_unbalanced(to_collators);
         }
     }
 }
 
 impl pallet_transaction_payment::Config for Runtime {
+    type Event = Event;
     type OnChargeTransaction = pallet_transaction_payment::CurrencyAdapter<Balances, DealWithFees>;
     type WeightToFee = WeightToFee;
     type LengthToFee = ConstantMultiplier<Balance, TransactionByteFee>;
@@ -480,6 +496,7 @@ impl cumulus_pallet_parachain_system::Config for Runtime {
     type OutboundXcmpMessageSource = XcmpQueue;
     type XcmpMessageHandler = XcmpQueue;
     type ReservedXcmpWeight = ReservedXcmpWeight;
+    type CheckAssociatedRelayNumber = RelayNumberStrictlyIncreases;
 }
 
 impl parachain_info::Config for Runtime {}
@@ -587,6 +604,7 @@ impl pallet_treasury::Config for Runtime {
     type WeightInfo = pallet_treasury::weights::SubstrateWeight<Runtime>;
     type MaxApprovals = MaxApprovals;
     type ProposalBondMaximum = ();
+    type SpendOrigin = frame_support::traits::NeverEnsureOrigin<Balance>;
 }
 
 parameter_types! {
@@ -625,6 +643,56 @@ impl orml_xcm::Config for Runtime {
     type SovereignOrigin = EnsureRoot<AccountId>;
 }
 
+parameter_types! {
+    pub const MinVestedTransfer: Balance = UNIT * 1;
+    pub const MaxVestingSchedules: u32 = 50u32;
+}
+
+parameter_types! {
+      pub GMAccounts: Vec<AccountId> = vec![
+          // GM Root Account (gMW3W6wkNEPxjELfucN4ejboXDxtNQ9rL1Txz1GBpVmweBGzP)
+          hex_literal::hex!["5a5e219566f3f52fcf73ffd8c41aca1d8e3bf7dc82e03c2a8504c4e517c62538"].into(),
+          // GM Treasury Pallet Account
+          TreasuryPalletId::get().into_account_truncating(),
+      ];
+}
+
+pub struct EnsureGMAccount;
+impl EnsureOrigin<Origin> for EnsureGMAccount {
+    type Success = AccountId;
+
+    fn try_origin(o: Origin) -> Result<Self::Success, Origin> {
+        Into::<Result<RawOrigin<AccountId>, Origin>>::into(o).and_then(|o| match o {
+            RawOrigin::Signed(caller) => {
+                if GMAccounts::get().contains(&caller) {
+                    Ok(caller)
+                } else {
+                    Err(Origin::from(Some(caller)))
+                }
+            }
+            r => Err(Origin::from(r)),
+        })
+    }
+
+    #[cfg(feature = "runtime-benchmarks")]
+    fn successful_origin() -> Origin {
+        let zero_account_id =
+            AccountId::decode(&mut sp_runtime::traits::TrailingZeroInput::zeroes())
+                .expect("infinite length input; no invalid inputs for type; qed");
+        Origin::from(RawOrigin::Signed(zero_account_id))
+    }
+}
+
+impl orml_vesting::Config for Runtime {
+    type Event = Event;
+    type Currency = Balances;
+    type MinVestedTransfer = MinVestedTransfer;
+    type VestedTransferOrigin = EnsureGMAccount;
+    type WeightInfo = ();
+    type MaxVestingSchedules = MaxVestingSchedules;
+    type BlockNumberProvider = System;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
     pub enum Runtime where
@@ -646,7 +714,7 @@ construct_runtime!(
 
         // Monetary stuff.
         Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 10,
-        TransactionPayment: pallet_transaction_payment::{Pallet, Storage} = 11,
+        TransactionPayment: pallet_transaction_payment::{Pallet, Storage, Event<T>} = 11,
         Tokens: orml_tokens::{Pallet, Storage, Event<T>, Config<T>} = 12,
         Currencies: orml_currencies::{Pallet, Call, Storage, Event<T>} = 13,
 
@@ -664,6 +732,7 @@ construct_runtime!(
         DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 33,
 
         OrmlXcm: orml_xcm = 50,
+        CarrotOnAStick: orml_vesting::{Pallet, Storage, Call, Event<T>, Config<T>} = 51,
     }
 );
 

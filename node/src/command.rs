@@ -5,7 +5,7 @@ use crate::{
     service::{new_partial, TemplateRuntimeExecutor},
 };
 use codec::Encode;
-use cumulus_client_service::genesis::generate_genesis_block;
+use cumulus_client_cli::generate_genesis_block;
 use cumulus_primitives_core::ParaId;
 use frame_benchmarking_cli::{BenchmarkCmd, SUBSTRATE_REFERENCE_HARDWARE};
 use gm_chain_runtime::{Block, RuntimeApi};
@@ -201,9 +201,9 @@ pub fn run() -> Result<()> {
             builder.with_profiling(sc_tracing::TracingReceiver::Log, "");
             let _ = builder.init();
 
-            let spec = load_spec(&params.chain.clone().unwrap_or_default())?;
+            let spec = load_spec(&params.shared_params.chain.clone().unwrap_or_default())?;
             let state_version = Cli::native_runtime_version(&spec).state_version();
-            let block: Block = generate_genesis_block(&spec, state_version)?;
+            let block: Block = generate_genesis_block(&*spec, state_version)?;
             let raw_header = block.header().encode();
             let output_buf = if params.raw {
                 raw_header
@@ -224,8 +224,9 @@ pub fn run() -> Result<()> {
             builder.with_profiling(sc_tracing::TracingReceiver::Log, "");
             let _ = builder.init();
 
-            let raw_wasm_blob =
-                extract_genesis_wasm(&cli.load_spec(&params.chain.clone().unwrap_or_default())?)?;
+            let raw_wasm_blob = extract_genesis_wasm(
+                &cli.load_spec(&params.shared_params.chain.clone().unwrap_or_default())?,
+            )?;
             let output_buf = if params.raw {
                 raw_wasm_blob
             } else {
@@ -274,6 +275,9 @@ pub fn run() -> Result<()> {
                 BenchmarkCmd::Machine(cmd) => {
                     runner.sync_run(|config| cmd.run(&config, SUBSTRATE_REFERENCE_HARDWARE.clone()))
                 }
+
+                #[allow(unreachable_patterns)]
+                _ => Err("Benchmarking sub-command unsupported".into()),
             }
         }
         Some(Subcommand::TryRuntime(cmd)) => {
@@ -341,7 +345,7 @@ pub fn run() -> Result<()> {
 
                 let state_version =
                     RelayChainCli::native_runtime_version(&config.chain_spec).state_version();
-                let block: Block = generate_genesis_block(&config.chain_spec, state_version)
+                let block: Block = generate_genesis_block(&*config.chain_spec, state_version)
                     .map_err(|e| format!("{:?}", e))?;
                 let genesis_state = format!("0x{:?}", HexDisplay::from(&block.header().encode()));
 
@@ -468,8 +472,8 @@ impl CliConfiguration<Self> for RelayChainCli {
         self.base.base.role(is_dev)
     }
 
-    fn transaction_pool(&self) -> Result<sc_service::config::TransactionPoolOptions> {
-        self.base.base.transaction_pool()
+    fn transaction_pool(&self, is_dev: bool) -> Result<sc_service::config::TransactionPoolOptions> {
+        self.base.base.transaction_pool(is_dev)
     }
 
     fn state_cache_child_ratio(&self) -> Result<Option<usize>> {
