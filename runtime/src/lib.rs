@@ -446,6 +446,14 @@ parameter_types! {
     pub TreasuryAccount: AccountId = TreasuryPalletId::get().into_account_truncating();
 }
 
+pub struct ToStakingPot;
+impl OnUnbalanced<NegativeImbalance> for ToStakingPot {
+    fn on_nonzero_unbalanced(amount: NegativeImbalance) {
+        let staking_pot = PotId::get().into_account_truncating();
+        Balances::resolve_creating(&staking_pot, amount);
+    }
+}
+
 type NegativeImbalance = <Balances as Currency<AccountId>>::NegativeImbalance;
 
 pub struct DealWithFees;
@@ -456,7 +464,11 @@ impl OnUnbalanced<NegativeImbalance> for DealWithFees {
                 // Merge with fee, for now we send everything to the treasury
                 tips.merge_into(&mut fees);
             }
-            Treasury::on_unbalanced(fees);
+
+            let (to_collators, to_treasury) = fees.ration(50, 50);
+
+            Treasury::on_unbalanced(to_treasury);
+            ToStakingPot::on_unbalanced(to_collators);
         }
     }
 }
