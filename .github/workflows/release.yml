@@ -8,13 +8,43 @@ env:
 on:
   workflow_dispatch:
     inputs:
+      scope:
+        description: Release scope (default = full)
+        required: true
+        default: full
+        type: choice
+        options:
+          - client
+          - runtime
+          - full
       tag:
         description: 'Release version (e.g. v0.1.0)'
         required: true
 
 jobs:
+  build_binary:
+    if: ${{ github.event.inputs.tag == 'full' }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Build binary
+      run: cargo build --release
+      
+    - name: Upload binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: gm-binary-${{ matrix.os }}
+        path: target/release/gm-chain-node-${{ matrix.os }}
+        
+        
   release:
     name: Build and publish GM Runtime
+    needs: build_binary
     runs-on: ubuntu-latest
     steps:
       # Checkout the codebase
@@ -94,11 +124,32 @@ jobs:
         with:
           datafile: template_data.json
           path: .github/release-template.md
+          
+      - name: Download linux binary
+        if: ${{ github.event.inputs.tag == 'full' }}
+        uses: actions/download-artifact@v3
+        with:
+          name: gm-binary-ubuntu-latest
+          
+      - name: Download mac binary
+        if: ${{ github.event.inputs.tag == 'full' }}
+        uses: actions/download-artifact@v3
+        with:
+          name: gm-binary-macos-latest
+          
+      - name: Download windows binary
+        if: ${{ github.event.inputs.tag == 'full' }}
+        uses: actions/download-artifact@v3
+        with:
+          name: gm-binary-windows-latest
 
       - name: Publish github release
         uses: softprops/action-gh-release@v1
         with:
           files: |
+            gm-chain-node-ubuntu-latest
+            gm-chain-node-macos-latest
+            gm-chain-node-windows-latest
             ${{ steps.srtool_build.outputs.wasm }}
             ${{ steps.srtool_build.outputs.wasm_compressed }}
           body_path: ".github/release-template.md"
