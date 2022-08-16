@@ -14,7 +14,7 @@ You may need to restart your system before the next steps.
 
  ``rustup target add wasm32-unknown-unknown --toolchain nightly-2021-11-02``
 
- ``sudo apt install cmake git clang libclang-dev``
+ ``apt install cmake git clang libclang-dev``
 Type Y to proceed.
 
  Clone the repo:
@@ -27,7 +27,7 @@ Type Y to proceed.
 
  Move the directory to a new directory:
 
- ``sudo mv gm_chain /usr/local/bin``
+ ``mv gm_chain /usr/local/bin``
 
  Check that the directory has been moved:
 
@@ -39,7 +39,7 @@ Type Y to proceed.
 
  ``cd``
 
- ``sudo chown root:root /usr/local/bin/gm_chain``
+ ``chown root:root /usr/local/bin/gm_chain``
 
  You need to compile the code, this will take quite a while depending on your system (30+ minutes is normal):
 
@@ -97,6 +97,10 @@ Within that file, paste in the following:
 
 Then ctrl + s then ctrl + x to save & exit that file.
 
+Note: If you can't peer with parachain collators change bootnodes to:
+
+``--bootnodes "/ip4/149.102.128.37/tcp/30333/p2p/12D3KooWJqRDxZM7CeJ8ivpbLWSzmEe3AyEzo2Je9Ew9Mnaa9T1j" \``
+
 Before starting the node, create the base-path folder and give it the necessary permissions & ownership:
 
 ``cd``
@@ -142,3 +146,39 @@ Note: see more here if you want to double check the above https://docs.substrate
 Now we can start the the service again:
 
 ``systemctl start gm_chain-collator.service``
+
+Now we need to rotate keys and set our keys on chain.
+
+Ensure the collator is running, or this step won't work:
+
+``curl -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "author_rotateKeys", "params":[]}' http://127.0.0.1:9933/``
+
+You will be greeted with an output that looks like:
+
+``{"jsonrpc":"2.0","result":"0xprivate_key_will_be_here0","id":1}``
+
+"result":"**0x_private_key_will_be_here0**" is what we are interested in.
+
+You need to make sure that you have a Polkadot/Substrate account set up, here's some videos in case you don't know how to do that:
+
+1. Polkadot JS Video  https://www.youtube.com/watch?v=dG0DP9vayPY    https://www.youtube.com/watch?v=BpTQBAyFvEk
+
+2. Talisman Video   https://docs.talisman.xyz/talisman/talisman-initiation/setup-a-talisman-wallet  
+
+Now that you have made an account using one of those extensions, head on over to the GM Parachain section of Polkadot JS: 
+
+https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fkusama.gmordie.com#/extrinsics
+
+Ensure that you are in the Developer pallet (the top header), and navigate to the extrinsics section in the drop down.
+
+Note: If you are doing this before the token distribution event, please ping the GM Intern in our Discord, and I will send you some $FREN so you can send the extrinsics.
+
+In the "using the selected account field" select the account you just made for the collator.<br/>
+In the "submit the following extrinsic field" select "session".<br/>
+In the next field (to the right), select "setKeys(keys, proof)".<br/>
+In the "keys:" field, paste in your **0x_private_key_will_be_here0** from your node.<br/>
+In the "proof" field, type in " 0 ".
+
+Submit the transaction.
+
+Congratulations, you should now be onboarded as a collator.
