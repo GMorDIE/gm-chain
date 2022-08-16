@@ -168,25 +168,23 @@ pub mod module {
     #[pallet::hooks]
     impl<T: Config> Hooks<T::BlockNumber> for Pallet<T> {
         fn on_initialize(n: T::BlockNumber) -> Weight {
-            if n != Zero::zero() {
-                if (n % T::PeriodLength::get()).is_zero() {
-                    match CurrentTimePeriod::<T>::get() {
-                        TimePeriod::Morning => {
-                            CurrentTimePeriod::<T>::set(TimePeriod::MidOne);
-                            Self::deposit_event(Event::MidOneStarted);
-                        }
-                        TimePeriod::MidOne => {
-                            CurrentTimePeriod::<T>::set(TimePeriod::Night);
-                            Self::deposit_event(Event::NightStarted);
-                        }
-                        TimePeriod::Night => {
-                            CurrentTimePeriod::<T>::set(TimePeriod::MidTwo);
-                            Self::deposit_event(Event::MidTwoStarted);
-                        }
-                        TimePeriod::MidTwo => {
-                            CurrentTimePeriod::<T>::set(TimePeriod::Morning);
-                            Self::deposit_event(Event::MorningStarted);
-                        }
+            if n != Zero::zero() && (n % T::PeriodLength::get()).is_zero() {
+                match CurrentTimePeriod::<T>::get() {
+                    TimePeriod::Morning => {
+                        CurrentTimePeriod::<T>::set(TimePeriod::MidOne);
+                        Self::deposit_event(Event::MidOneStarted);
+                    }
+                    TimePeriod::MidOne => {
+                        CurrentTimePeriod::<T>::set(TimePeriod::Night);
+                        Self::deposit_event(Event::NightStarted);
+                    }
+                    TimePeriod::Night => {
+                        CurrentTimePeriod::<T>::set(TimePeriod::MidTwo);
+                        Self::deposit_event(Event::MidTwoStarted);
+                    }
+                    TimePeriod::MidTwo => {
+                        CurrentTimePeriod::<T>::set(TimePeriod::Morning);
+                        Self::deposit_event(Event::MorningStarted);
                     }
                 }
             }
