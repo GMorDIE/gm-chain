@@ -608,12 +608,12 @@ impl pallet_treasury::Config for Runtime {
 }
 
 parameter_types! {
-    pub BasicDeposit: Balance = 1000 * UNIT;
-    pub FieldDeposit: Balance = 500 * UNIT;
+    pub BasicDeposit: Balance = 100 * UNIT;
+    pub FieldDeposit: Balance = 50 * UNIT;
     pub const MaxAdditionalFields: u32 = 32;
     pub const MaxRegistrars: u32 = 8;
     pub const MaxSubAccounts: u32 = 32;
-    pub SubAccountDeposit: Balance = 2000 * UNIT;
+    pub SubAccountDeposit: Balance = 200 * UNIT;
 }
 
 impl pallet_identity::Config for Runtime {
