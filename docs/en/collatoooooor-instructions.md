@@ -135,7 +135,7 @@ Enter y to continue if prompted.
 
 ``rm -rf /var/lib/gm_chain/polkadot/chains/ksmcc3/*``
 
-``curl -o - -L https://ksm-rocksdb.polkashots.io/kusama-14002413.RocksDb.tar.lz4 | lz4 -c -d - | tar -x -C /var/lib/gm_chain/polkadot/chains/ksmcc3``
+``curl -o - -L https://ksm-rocksdb.polkashots.io/snapshot | lz4 -c -d - | tar -x -C /var/lib/gm_chain/polkadot/chains/ksmcc3``
 
 Once that's downloaded, we need to make sure you add your account to the collator, I would strongly reccomend making a new account for that... go to polkadot.js.org, and make a new account but save the "raw seed", and not the mnemonic.
 
