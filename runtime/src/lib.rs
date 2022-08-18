@@ -61,6 +61,8 @@ use weights::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight};
 use xcm::latest::prelude::BodyId;
 use xcm_executor::XcmExecutor;
 
+pub mod gov1;
+
 /// Alias to 512-bit hash when used in the context of a transaction signature on the chain.
 pub type Signature = MultiSignature;
 
@@ -731,8 +733,22 @@ construct_runtime!(
         CumulusXcm: cumulus_pallet_xcm::{Pallet, Event<T>, Origin} = 32,
         DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 33,
 
+        // ORML
         OrmlXcm: orml_xcm = 50,
         CarrotOnAStick: orml_vesting::{Pallet, Storage, Call, Event<T>, Config<T>} = 51,
+
+        // Gov stuff
+        Democracy: pallet_democracy::{Pallet, Call, Storage, Config<T>, Event<T>} = 60,
+        Council: pallet_collective::<Instance1>::{Pallet, Call, Storage, Origin<T>, Event<T>, Config<T>} = 61,
+        TechnicalCommittee: pallet_collective::<Instance2>::{Pallet, Call, Storage, Origin<T>, Event<T>, Config<T>} = 62,
+        PhragmenElection: pallet_elections_phragmen::{Pallet, Call, Storage, Event<T>, Config<T>} = 63,
+        TechnicalMembership: pallet_membership::<Instance2>::{Pallet, Call, Storage, Event<T>, Config<T>} = 64,
+        DAOFuckers: pallet_membership::<Instance1>::{Pallet, Call, Storage, Event<T>, Config<T>} = 65,
+        Preimage: pallet_preimage::{Pallet, Call, Storage, Event<T>} = 66,
+        Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>} = 67,
+
+        DAOFunnel: pallet_funnel::<Instance1>::{Pallet, Storage} = 68,
+        ElectionFunnel: pallet_funnel::<Instance2>::{Pallet, Storage} = 69,
     }
 );
 

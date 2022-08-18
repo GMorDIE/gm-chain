@@ -352,5 +352,11 @@ fn testnet_genesis(
         tokens: Default::default(),
         treasury: Default::default(),
         carrot_on_a_stick: Default::default(),
+        council: Default::default(),
+        democracy: Default::default(),
+        phragmen_election: Default::default(),
+        technical_committee: Default::default(),
+        technical_membership: Default::default(),
+        dao_fuckers: Default::default(),
     }
 }
