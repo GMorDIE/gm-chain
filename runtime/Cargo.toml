@@ -24,6 +24,7 @@ smallvec = "1.6.1"
 static_assertions = "1.1.0"
 
 pallet-funnel = { path = "../pallets/funnel", default-features = false }
+pallet-democracy = { path = "../pallets/democracy", default-features = false }
 
 # ORML
 orml-currencies = { path = "../pallets/currencies", default-features = false }
@@ -45,7 +46,6 @@ pallet-aura = { git = "https://github.com/paritytech/substrate", default-feature
 pallet-authorship = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.27" }
 pallet-balances = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.27" }
 pallet-collective = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.27" }
-pallet-democracy = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.27" }
 pallet-elections-phragmen = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.27" }
 pallet-identity = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.27" }
 pallet-membership = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.27" }

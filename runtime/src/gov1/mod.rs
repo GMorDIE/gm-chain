@@ -12,12 +12,12 @@ type MoreThanHalfCouncil = EitherOfDiverse<
 >;
 
 parameter_types! {
-    pub LaunchPeriod: BlockNumber = 7 * DAYS;
-    pub VotingPeriod: BlockNumber = 7 * DAYS;
-    pub FastTrackVotingPeriod: BlockNumber = 3 * HOURS;
+    pub LaunchPeriod: BlockNumber = 1 * MINUTES;
+    pub VotingPeriod: BlockNumber = 1 * MINUTES;
+    pub FastTrackVotingPeriod: BlockNumber = 1 * MINUTES;
     pub const MinimumDeposit: Balance = 100 * MILLIUNIT;
-    pub EnactmentPeriod: BlockNumber = 8 * DAYS;
-    pub CooloffPeriod: BlockNumber = 7 * DAYS;
+    pub EnactmentPeriod: BlockNumber = 1 * MINUTES;
+    pub CooloffPeriod: BlockNumber = 1 * MINUTES;
     pub const InstantAllowed: bool = true;
     pub const MaxVotes: u32 = 100;
     pub const MaxProposals: u32 = 100;
@@ -26,7 +26,10 @@ parameter_types! {
 impl pallet_democracy::Config for Runtime {
     type Proposal = Call;
     type Event = Event;
+    type Balance = Balance;
     type Currency = Balances;
+    type AyeCurrency = orml_tokens::CurrencyAdapter<Runtime, GetGMCurrencyId>;
+    type NayCurrency = orml_tokens::CurrencyAdapter<Runtime, GetGNCurrencyId>;
     type EnactmentPeriod = EnactmentPeriod;
     type VoteLockingPeriod = EnactmentPeriod;
     type LaunchPeriod = LaunchPeriod;
@@ -68,7 +71,7 @@ impl pallet_democracy::Config for Runtime {
     type CooloffPeriod = CooloffPeriod;
     type PreimageByteDeposit = PreimageByteDeposit;
     type OperationalPreimageOrigin = pallet_collective::EnsureMember<AccountId, CouncilCollective>;
-    type Slash = Treasury;
+    type Slash = ();
     type Scheduler = Scheduler;
     type PalletsOrigin = OriginCaller;
     type MaxVotes = MaxVotes;
