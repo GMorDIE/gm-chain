@@ -21,7 +21,7 @@ generate-genesis-state:
 generate-both: generate-genesis-state generate-genesis-wasm
 
 download-relay:
-	wget -O testing/polkadot "https://github.com/paritytech/polkadot/releases/download/v0.9.24/polkadot" && \
+	wget -O testing/polkadot "https://github.com/paritytech/polkadot/releases/download/v0.9.27/polkadot" && \
 	chmod +x testing/polkadot
 
 generate-relay-raw-chainspec:
@@ -47,6 +47,7 @@ purge-testing:
 
 run-parachain-collator:
 	./testing/gm-chain-node \
+    --chain local \
 		--collator \
 		--alice \
 		--force-authoring \
