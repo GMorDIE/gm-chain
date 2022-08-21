@@ -11,6 +11,9 @@ on:
       tag:
         description: 'Release version (e.g. v0.1.0)'
         required: true
+      codename:
+        description: '🐶'
+        required: true
 
 jobs:
   build_binary:
@@ -108,15 +111,18 @@ jobs:
       - name: Generate template data
         run: |
           TAG=${{ github.event.inputs.tag }}
+          CODENAME=${{ github.event.inputs.codename }}
           SRTOOL_DETAILS=$(cat gm-srtool-digest.json)
           SUBWASM_DETAILS=$(cat gm-subwam-info.json)
           echo 'Template data:'
           jq -n \
             --arg tag "$TAG" \
+            --arg codename "$CODENAME" \
             --arg srtool_details "$SRTOOL_DETAILS" \
             --arg subwasm_details "$SUBWASM_DETAILS" \
             '{
               tag: $tag,
+              codename: $codename,
               srtool_details: $srtool_details,
               subwasm_details: $subwasm_details
             }' | tee template_data.json
