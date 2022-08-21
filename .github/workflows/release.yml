@@ -156,4 +156,5 @@ jobs:
             ${{ steps.srtool_build.outputs.wasm_compressed }}
           body_path: ".github/release-template.md"
           tag_name: ${{ github.event.inputs.tag }}
+          name: "${{ github.event.inputs.tag }} - ${{ github.event.inputs.codename }}"
           token: ${{ secrets.GITHUB_TOKEN }}
