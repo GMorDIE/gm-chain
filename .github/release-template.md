@@ -1,4 +1,4 @@
-Release GM Runtime {{tag}}
+Release GM Runtime {{tag}} {{codename}}
 ===
 
 ### New Release Details:
