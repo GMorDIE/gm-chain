@@ -111,7 +111,7 @@ jobs:
       - name: Generate template data
         run: |
           TAG=${{ github.event.inputs.tag }}
-          CODENAME=${{ github.event.inputs.codename }}
+          CODENAME="${{ github.event.inputs.codename }}"
           SRTOOL_DETAILS=$(cat gm-srtool-digest.json)
           SUBWASM_DETAILS=$(cat gm-subwam-info.json)
           echo 'Template data:'
