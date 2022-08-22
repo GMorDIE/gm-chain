@@ -12,7 +12,7 @@ on:
         description: 'Release version (e.g. v0.1.0)'
         required: true
       codename:
-        description: '🐶'
+        description: 'codename 🐶'
         required: true
 
 jobs:
@@ -103,10 +103,10 @@ jobs:
             gm-subwam-info.txt
             gm-diff.txt
       - name: Create Tag
-        uses: negz/create-tag@v1
+        uses: laputansoft/github-tag-action@v4.6
         with:
-          version: ${{ github.event.inputs.tag }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.event.inputs.tag }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate template data
         run: |
