@@ -82,7 +82,7 @@ Within that file, paste in the following:
 ``--name "YOUR-COLLATOR-NAME-HERE" \``<br/>
 ``--chain /usr/local/bin/gm_chain/res/kusama/kusama-parachain-live-raw.json \``<br/>
 ``--port 30333 \``<br/>
-``--bootnodes "/ip4/136.243.93.11/tcp/30333/p2p/12D3KooWHr2Qt2kfhR3YvcruVGfTrLcDG4AfuCmu7qq6n6w1Dtcn" \``<br/>
+``--bootnodes "/ip4/136.243.93.11/tcp/30333/ws/p2p/12D3KooWHr2Qt2kfhR3YvcruVGfTrLcDG4AfuCmu7qq6n6w1Dtcn" \``<br/>
 ``-- \``<br/>
 ``--execution wasm \``<br/>
 ``--chain kusama \``<br/>
@@ -99,7 +99,7 @@ Then ctrl + s then ctrl + x to save & exit that file.
 
 Note: If you can't peer with parachain collators change bootnodes to:
 
-``--bootnodes "/ip4/149.102.128.37/tcp/30333/p2p/12D3KooWJqRDxZM7CeJ8ivpbLWSzmEe3AyEzo2Je9Ew9Mnaa9T1j" \``
+``--bootnodes "/ip4/149.102.128.37/tcp/30333/ws/p2p/12D3KooWJqRDxZM7CeJ8ivpbLWSzmEe3AyEzo2Je9Ew9Mnaa9T1j" \``
 
 Before starting the node, create the base-path folder and give it the necessary permissions & ownership:
 
