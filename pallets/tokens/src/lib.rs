@@ -1012,7 +1012,7 @@ impl<T: Config> Pallet<T> {
 
                             from_account_opposite.free = from_account_opposite
                                 .free
-                                .checked_add(&from_account.reserved)
+                                .checked_add(&from_account_opposite.reserved)
                                 .ok_or(ArithmeticError::Overflow)?;
                             from_account_opposite.reserved = Zero::zero();
 
