@@ -24,7 +24,12 @@ smallvec = "1.6.1"
 static_assertions = "1.1.0"
 
 pallet-funnel = { path = "../pallets/funnel", default-features = false }
-pallet-democracy = { path = "../pallets/democracy", default-features = false }
+#pallet-democracy = { path = "../pallets/democracy", default-features = false }
+
+pallet-democracy = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.27" }
+pallet-referenda = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.27" }
+
+sp-arithmetic = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.27" }
 
 # ORML
 orml-currencies = { path = "../pallets/currencies", default-features = false }

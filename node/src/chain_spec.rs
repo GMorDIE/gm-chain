@@ -355,8 +355,6 @@ fn testnet_genesis(
         council: Default::default(),
         democracy: Default::default(),
         phragmen_election: Default::default(),
-        technical_committee: Default::default(),
-        technical_membership: Default::default(),
         dao_fuckers: Default::default(),
     }
 }

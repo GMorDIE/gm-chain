@@ -5,10 +5,7 @@ use core::marker::PhantomData;
 use frame_support::pallet_prelude::StorageValue;
 use frame_support::pallet_prelude::ValueQuery;
 use frame_support::traits::ChangeMembers;
-use frame_system::{ensure_root, ensure_signed, pallet_prelude::*};
-use scale_info::TypeInfo;
 use sp_std::vec::Vec;
-use sp_std::{fmt::Debug, marker, result};
 
 pub use module::*;
 
@@ -37,7 +34,7 @@ impl<T: Config<I>, I: 'static> ChangeMembers<<T as frame_system::Config>::Accoun
 {
     fn change_members_sorted(
         _incoming: &[T::AccountId],
-        outgoing: &[T::AccountId],
+        _outgoing: &[T::AccountId],
         new: &[T::AccountId],
     ) {
         Members::<T, I>::put(new);
