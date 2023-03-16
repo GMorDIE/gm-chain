@@ -2,7 +2,12 @@
   "name": "GM Rococo Parachain",
   "id": "gm_rococo",
   "chainType": "Local",
-  "bootNodes": [],
+  "bootNodes": [
+    "/ip4/95.111.227.232/tcp/30333/ws/p2p/12D3KooWRCNArGd89hZ6ZGEbVxptJVeXd7h9TjmFg5fLXNjAnurT",
+    "/ip4/95.217.87.220/tcp/30377/ws/p2p/12D3KooWP2Lr5pCrFZwHffJ5WuhtPgJ62QVDTAruEnSd3CRjWbBF",
+    "/dns/gm-bootnode-01.bldnodes.org/tcp/443/wss/p2p/12D3KooWRCNArGd89hZ6ZGEbVxptJVeXd7h9TjmFg5fLXNjAnurT",
+    "/dns/gm-bootnode-02.bldnodes.org/tcp/443/wss/p2p/12D3KooWP2Lr5pCrFZwHffJ5WuhtPgJ62QVDTAruEnSd3CRjWbBF"
+  ],
   "telemetryEndpoints": [
   	[
   		"/dns/telemetry.polkadot.io/tcp/443/x-parity-wss/%2Fsubmit%2F",
