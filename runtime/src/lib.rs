@@ -644,6 +644,25 @@ impl orml_xcm::Config for Runtime {
 }
 
 parameter_types! {
+    pub const BulletPeriod: u32 = 10; // ~1 minute
+    pub const BlitzPeriod: u32 = 50; // ~5 minutes
+    pub const RapidPeriod: u32 = 150; // ~15 minutes
+    pub const DailyPeriod: u32 = 14400; // ~24 hours
+    pub const IncentiveShare: u8 = 10; // janitor gets 10% of the prize
+}
+
+impl pallet_chess::Config for Runtime {
+    type Event = Event;
+    type ChessWeightInfo = pallet_chess::weights::SubstrateWeight<Runtime>;
+    type MultiCurrency = Currencies;
+    type BulletPeriod = BulletPeriod;
+    type BlitzPeriod = BlitzPeriod;
+    type RapidPeriod = RapidPeriod;
+    type DailyPeriod = DailyPeriod;
+    type IncentiveShare = IncentiveShare;
+}
+
+parameter_types! {
     pub const MinVestedTransfer: Balance = UNIT;
     pub const MaxVestingSchedules: u32 = 50u32;
 }
@@ -733,6 +752,9 @@ construct_runtime!(
 
         OrmlXcm: orml_xcm = 50,
         CarrotOnAStick: orml_vesting::{Pallet, Storage, Call, Event<T>, Config<T>} = 51,
+
+        // Chess
+        Chess: pallet_chess::{Pallet, Call, Storage, Event<T>} = 60,
     }
 );
 

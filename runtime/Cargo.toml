@@ -22,6 +22,8 @@ scale-info = { version = "2.1", default-features = false, features = ["derive"] 
 serde = { version = "1.0.137", optional = true, features = ["derive"] }
 smallvec = "1.6.1"
 
+# Chess
+pallet-chess = { git = "https://github.com/SubstrateChess/pallet-chess.git", default-features = false, branch = "gmordie" }
 
 # ORML
 orml-currencies = { path = "../pallets/currencies", default-features = false }
@@ -138,6 +140,7 @@ std = [
 	"orml-traits/std",
 	"orml-xcm/std",
 	"orml-vesting/std",
+	"pallet-chess/std",
 #	"orml-xtokens/std"
 ]
 
