@@ -14,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: actions-rs/toolchain@v1
-      with:
-        toolchain: nightly-2022-05-01
-        target: wasm32-unknown-unknown
+
+    - name: Setup for checks
+      run: sudo apt install -y git clang curl libssl-dev llvm libudev-dev protobuf-compiler
+
     - name: Build
       run: cargo build --verbose
   
@@ -25,10 +25,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly-2022-05-01
-          components: clippy
+
+      - name: Setup for checks
+        run: sudo apt install -y git clang curl libssl-dev llvm libudev-dev protobuf-compiler
+
       - name: Run clippy
         run: cargo clippy -- -D warnings
   
@@ -36,5 +36,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      
       - name: Run cargofmt
-        run: cargo +stable fmt --all -- --check
+        run: cargo fmt --all -- --check
