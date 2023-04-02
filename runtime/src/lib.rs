@@ -644,10 +644,10 @@ impl orml_xcm::Config for Runtime {
 }
 
 parameter_types! {
-    pub const BulletPeriod: u32 = 10; // ~1 minute
-    pub const BlitzPeriod: u32 = 50; // ~5 minutes
-    pub const RapidPeriod: u32 = 150; // ~15 minutes
-    pub const DailyPeriod: u32 = 14400; // ~24 hours
+    pub const BulletPeriod: u32 = 5; // ~1 minute
+    pub const BlitzPeriod: u32 = 25; // ~5 minutes
+    pub const RapidPeriod: u32 = 75; // ~15 minutes
+    pub const DailyPeriod: u32 = 7200; // ~24 hours
     pub const IncentiveShare: u8 = 10; // janitor gets 10% of the prize
 }
 
