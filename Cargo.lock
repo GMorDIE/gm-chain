@@ -3015,15 +3015,15 @@ dependencies = [
  "frame-try-runtime",
  "hex-literal",
  "log",
- "orml-currencies 0.4.1-dev",
- "orml-tokens 0.4.1-dev",
+ "orml-currencies",
+ "orml-tokens",
  "orml-traits",
  "orml-vesting",
  "orml-xcm",
  "pallet-aura",
  "pallet-authorship",
  "pallet-balances",
- "pallet-chess 4.0.0-dev (git+https://github.com/SubstrateChess/pallet-chess.git?branch=gmordie)",
+ "pallet-chess",
  "pallet-collator-selection",
  "pallet-identity",
  "pallet-session",
@@ -5187,7 +5187,7 @@ version = "0.4.1-dev"
 dependencies = [
  "frame-support",
  "frame-system",
- "orml-tokens 0.4.1-dev",
+ "orml-tokens",
  "orml-traits",
  "orml-utilities",
  "pallet-balances",
@@ -5195,23 +5195,6 @@ dependencies = [
  "scale-info",
  "serde",
  "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
-name = "orml-currencies"
-version = "0.4.1-dev"
-source = "git+https://github.com/GMorDIE/gm-chain.git#9505553789dd0a072c2ecaceee18b46f008cb940"
-dependencies = [
- "frame-support",
- "frame-system",
- "orml-traits",
- "orml-utilities",
- "parity-scale-codec",
- "scale-info",
- "serde",
  "sp-io",
  "sp-runtime",
  "sp-std",
@@ -5231,21 +5214,6 @@ dependencies = [
  "serde",
  "sp-core",
  "sp-io",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
-name = "orml-tokens"
-version = "0.4.1-dev"
-source = "git+https://github.com/GMorDIE/gm-chain.git#9505553789dd0a072c2ecaceee18b46f008cb940"
-dependencies = [
- "frame-support",
- "frame-system",
- "orml-traits",
- "parity-scale-codec",
- "scale-info",
- "serde",
  "sp-runtime",
  "sp-std",
 ]
@@ -5493,28 +5461,6 @@ dependencies = [
  "pallet-treasury",
  "parity-scale-codec",
  "scale-info",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
-name = "pallet-chess"
-version = "4.0.0-dev"
-dependencies = [
- "cozy-chess",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "log",
- "orml-currencies 0.4.1-dev (git+https://github.com/GMorDIE/gm-chain.git)",
- "orml-tokens 0.4.1-dev (git+https://github.com/GMorDIE/gm-chain.git)",
- "orml-traits",
- "pallet-balances",
- "parity-scale-codec",
- "scale-info",
- "serde",
  "sp-core",
  "sp-io",
  "sp-runtime",
