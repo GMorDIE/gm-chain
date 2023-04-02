@@ -648,7 +648,6 @@ parameter_types! {
     pub const BlitzPeriod: u32 = 25; // ~5 minutes
     pub const RapidPeriod: u32 = 75; // ~15 minutes
     pub const DailyPeriod: u32 = 7200; // ~24 hours
-    pub const IncentiveShare: u8 = 10; // janitor gets 10% of the prize
 }
 
 impl pallet_chess::Config for Runtime {
@@ -659,7 +658,6 @@ impl pallet_chess::Config for Runtime {
     type BlitzPeriod = BlitzPeriod;
     type RapidPeriod = RapidPeriod;
     type DailyPeriod = DailyPeriod;
-    type IncentiveShare = IncentiveShare;
 }
 
 parameter_types! {
