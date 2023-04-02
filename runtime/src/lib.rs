@@ -644,10 +644,10 @@ impl orml_xcm::Config for Runtime {
 }
 
 parameter_types! {
-    pub const BulletPeriod: u32 = 5; // ~1 minute
-    pub const BlitzPeriod: u32 = 25; // ~5 minutes
-    pub const RapidPeriod: u32 = 75; // ~15 minutes
-    pub const DailyPeriod: u32 = 7200; // ~24 hours
+    pub const BulletPeriod: u32 = 7; // ~1 minute
+    pub const BlitzPeriod: u32 = 33; // ~5 minutes
+    pub const RapidPeriod: u32 = 100; // ~15 minutes
+    pub const DailyPeriod: u32 = 9600; // ~24 hours
 }
 
 impl pallet_chess::Config for Runtime {
