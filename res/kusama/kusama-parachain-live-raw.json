@@ -3,7 +3,11 @@
   "id": "its_a_lifestyle",
   "chainType": "Live",
   "bootNodes": [
-  	"/ip4/136.243.93.11/tcp/30333/p2p/12D3KooWHr2Qt2kfhR3YvcruVGfTrLcDG4AfuCmu7qq6n6w1Dtcn"
+  	"/ip4/136.243.93.11/tcp/30333/p2p/12D3KooWHr2Qt2kfhR3YvcruVGfTrLcDG4AfuCmu7qq6n6w1Dtcn",
+    "/ip4/95.111.227.232/tcp/30333/ws/p2p/12D3KooWRCNArGd89hZ6ZGEbVxptJVeXd7h9TjmFg5fLXNjAnurT",
+    "/ip4/95.217.87.220/tcp/30377/ws/p2p/12D3KooWP2Lr5pCrFZwHffJ5WuhtPgJ62QVDTAruEnSd3CRjWbBF",
+    "/dns/gm-bootnode-01.bldnodes.org/tcp/443/wss/p2p/12D3KooWRCNArGd89hZ6ZGEbVxptJVeXd7h9TjmFg5fLXNjAnurT",
+    "/dns/gm-bootnode-02.bldnodes.org/tcp/443/wss/p2p/12D3KooWP2Lr5pCrFZwHffJ5WuhtPgJ62QVDTAruEnSd3CRjWbBF"
   ],
   "telemetryEndpoints": [
     [
