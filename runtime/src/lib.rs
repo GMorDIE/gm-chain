@@ -6,6 +6,7 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
+mod governance;
 mod weights;
 pub mod xcm_config;
 
@@ -747,6 +748,11 @@ construct_runtime!(
         PolkadotXcm: pallet_xcm::{Pallet, Call, Event<T>, Origin, Config} = 31,
         CumulusXcm: cumulus_pallet_xcm::{Pallet, Event<T>, Origin} = 32,
         DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 33,
+
+        Scheduler: pallet_scheduler = 40,
+        Preimage: pallet_preimage = 41,
+        Council: pallet_collective::<Instance1> = 42,
+        Democracy: pallet_democracy = 43,
 
         OrmlXcm: orml_xcm = 50,
         CarrotOnAStick: orml_vesting::{Pallet, Storage, Call, Event<T>, Config<T>} = 51,
