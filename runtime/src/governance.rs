@@ -12,15 +12,15 @@ use frame_system::EnsureRoot;
 use pallet_collective::{self, EnsureProportionAtLeast};
 use sp_runtime::Perbill;
 
-type MajorityCouncilOrRoot = EitherOfDiverse<
+pub type MajorityCouncilOrRoot = EitherOfDiverse<
     EnsureProportionAtLeast<AccountId, CouncilCollective, 1, 2>,
     EnsureRoot<AccountId>,
 >;
-type UnanimousCouncilOrRoot = EitherOfDiverse<
+pub type UnanimousCouncilOrRoot = EitherOfDiverse<
     EnsureProportionAtLeast<AccountId, CouncilCollective, 1, 1>,
     EnsureRoot<AccountId>,
 >;
-type SuperMajorityCouncilOrRoot = EitherOfDiverse<
+pub type SuperMajorityCouncilOrRoot = EitherOfDiverse<
     EnsureProportionAtLeast<AccountId, CouncilCollective, 2, 3>,
     EnsureRoot<AccountId>,
 >;

@@ -9,6 +9,7 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 mod governance;
 mod weights;
 pub mod xcm_config;
+use governance::*;
 
 use cumulus_pallet_parachain_system::RelayNumberStrictlyIncreases;
 use orml_tokens::GetOpposite;
@@ -556,13 +557,10 @@ parameter_types! {
     pub const ExecutiveBody: BodyId = BodyId::Executive;
 }
 
-// We allow root only to execute privileged collator selection operations.
-pub type CollatorSelectionUpdateOrigin = EnsureRoot<AccountId>;
-
 impl pallet_collator_selection::Config for Runtime {
     type Event = Event;
     type Currency = Balances;
-    type UpdateOrigin = CollatorSelectionUpdateOrigin;
+    type UpdateOrigin = MajorityCouncilOrRoot;
     type PotId = PotId;
     type MaxCandidates = MaxCandidates;
     type MinCandidates = MinCandidates;
@@ -592,8 +590,8 @@ parameter_types! {
 impl pallet_treasury::Config for Runtime {
     type PalletId = TreasuryPalletId;
     type Currency = Balances;
-    type ApproveOrigin = EnsureRoot<AccountId>;
-    type RejectOrigin = EnsureRoot<AccountId>;
+    type ApproveOrigin = SuperMajorityCouncilOrRoot;
+    type RejectOrigin = MajorityCouncilOrRoot;
     type Event = Event;
     type OnSlash = ();
     type ProposalBond = ProposalBond;
@@ -622,11 +620,11 @@ impl pallet_identity::Config for Runtime {
     type Currency = Balances;
     type Event = Event;
     type FieldDeposit = FieldDeposit;
-    type ForceOrigin = EnsureRoot<AccountId>;
+    type ForceOrigin = MajorityCouncilOrRoot;
     type MaxAdditionalFields = MaxAdditionalFields;
     type MaxRegistrars = MaxRegistrars;
     type MaxSubAccounts = MaxSubAccounts;
-    type RegistrarOrigin = EnsureRoot<AccountId>;
+    type RegistrarOrigin = MajorityCouncilOrRoot;
     type Slashed = Treasury;
     type SubAccountDeposit = SubAccountDeposit;
     type WeightInfo = pallet_identity::weights::SubstrateWeight<Runtime>;
