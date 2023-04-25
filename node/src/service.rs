@@ -35,8 +35,9 @@ use substrate_prometheus_endpoint::Registry;
 
 use polkadot_service::CollatorPair;
 
-use cumulus_primitives_parachain_inherent::MockValidationDataInherentDataProvider;
-use cumulus_primitives_parachain_inherent::MockXcmConfig;
+use cumulus_primitives_parachain_inherent::{
+    MockValidationDataInherentDataProvider, MockXcmConfig,
+};
 use sc_client_api::HeaderBackend;
 use sc_service::ChainSpec;
 

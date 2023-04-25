@@ -1,8 +1,10 @@
-use frame_support::dispatch::{DispatchError, DispatchResult};
-use frame_support::traits::{
-    fungible, fungibles,
-    tokens::{Balance as BalanceT, DepositConsequence, WithdrawConsequence},
-    Contains, Get,
+use frame_support::{
+    dispatch::{DispatchError, DispatchResult},
+    traits::{
+        fungible, fungibles,
+        tokens::{Balance as BalanceT, DepositConsequence, WithdrawConsequence},
+        Contains, Get,
+    },
 };
 
 pub struct Combiner<AccountId, TestKey, A, B>(

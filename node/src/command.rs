@@ -1,8 +1,7 @@
-use crate::service::ChainIdentify;
 use crate::{
     chain_spec,
     cli::{Cli, RelayChainCli, Subcommand},
-    service::{new_partial, TemplateRuntimeExecutor},
+    service::{new_partial, ChainIdentify, TemplateRuntimeExecutor},
 };
 use codec::Encode;
 use cumulus_client_cli::generate_genesis_block;
@@ -19,8 +18,7 @@ use sc_service::{
     TaskManager,
 };
 use sp_core::hexdisplay::HexDisplay;
-use sp_runtime::traits::AccountIdConversion;
-use sp_runtime::traits::Block as BlockT;
+use sp_runtime::traits::{AccountIdConversion, Block as BlockT};
 use std::{io::Write, net::SocketAddr};
 
 fn load_spec(id: &str) -> std::result::Result<Box<dyn sc_service::ChainSpec>, String> {
