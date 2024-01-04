@@ -179,7 +179,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
     spec_name: create_runtime_str!("gm_parachain"),
     impl_name: create_runtime_str!("gm_parachain"),
     authoring_version: 1,
-    spec_version: 8,
+    spec_version: 9,
     impl_version: 0,
     apis: RUNTIME_API_VERSIONS,
     transaction_version: 1,
@@ -551,7 +551,7 @@ impl pallet_aura::Config for Runtime {
 parameter_types! {
     pub const PotId: PalletId = PalletId(*b"PotStake");
     pub const MaxCandidates: u32 = 1000;
-    pub const MinCandidates: u32 = 5;
+    pub const MinCandidates: u32 = 1;
     pub const SessionLength: BlockNumber = 6 * HOURS;
     pub const MaxInvulnerables: u32 = 100;
     pub const ExecutiveBody: BodyId = BodyId::Executive;
