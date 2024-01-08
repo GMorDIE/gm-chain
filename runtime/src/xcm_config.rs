@@ -26,6 +26,11 @@ parameter_types! {
     pub const RelayNetwork: NetworkId = NetworkId::Any;
     pub RelayChainOrigin: Origin = cumulus_pallet_xcm::Origin::Relay.into();
     pub Ancestry: MultiLocation = Parachain(ParachainInfo::parachain_id().into()).into();
+
+    /// The check account, which holds any native assets that have been teleported out and not back in (yet).
+    pub CheckAccount: AccountId = PolkadotXcm::check_account();
+
+    pub const FrenLocation: MultiLocation = MultiLocation { parents: 0, interior: Here };
 }
 
 /// Type for specifying how a `MultiLocation` can be converted into an `AccountId`. This is used
@@ -45,13 +50,13 @@ pub type LocalAssetTransactor = CurrencyAdapter<
     // Use this currency:
     Balances,
     // Use this currency when it is a fungible asset matching the given location or name:
-    IsConcrete<RelayLocation>,
+    IsConcrete<FrenLocation>,
     // Do a simple punn to convert an AccountId32 MultiLocation into a native chain account ID:
     LocationToAccountId,
     // Our chain's account ID type (we can't get away without mentioning it explicitly):
     AccountId,
-    // We don't track any teleports.
-    (),
+    // We track our teleports in/out to keep total issuance correct.
+    CheckAccount,
 >;
 
 /// This is the type we use to convert an (incoming) XCM origin into a local `Origin` instance,
@@ -180,6 +185,14 @@ pub type Barrier = DenyThenTry<
     ),
 >;
 
+parameter_types! {
+    pub const AssetHub: MultiLocation = MultiLocation { parents: 1, interior: X1(Parachain(1000)) };
+    pub const FrenFilter: MultiAssetFilter = Wild(AllOf { fun: WildFungible, id: Concrete(FrenLocation::get()) });
+    pub const FrenForAssetHub: (MultiAssetFilter, MultiLocation) = (FrenFilter::get(), AssetHub::get());
+}
+
+pub type TrustedTeleporters = (xcm_builder::Case<FrenForAssetHub>,);
+
 pub struct XcmConfig;
 impl xcm_executor::Config for XcmConfig {
     type Call = Call;
@@ -188,7 +201,7 @@ impl xcm_executor::Config for XcmConfig {
     type AssetTransactor = LocalAssetTransactor;
     type OriginConverter = XcmOriginToTransactDispatchOrigin;
     type IsReserve = NativeAsset;
-    type IsTeleporter = (); // Teleporting is disabled.
+    type IsTeleporter = TrustedTeleporters;
     type LocationInverter = LocationInverter<Ancestry>;
     type Barrier = Barrier;
     type Weigher = FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>;

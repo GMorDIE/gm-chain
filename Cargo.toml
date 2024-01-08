@@ -8,5 +8,7 @@ members = [
 	"runtime",
 ]
 
+resolver = "2"
+
 [patch.crates-io]
 ss58-registry = { git = "https://github.com/paritytech/ss58-registry" }

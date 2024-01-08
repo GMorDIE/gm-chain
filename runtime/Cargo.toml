@@ -22,6 +22,8 @@ scale-info = { version = "2.1", default-features = false, features = ["derive"] 
 serde = { version = "1.0.137", optional = true, features = ["derive"] }
 smallvec = "1.6.1"
 
+#librocksdb-sys = "=0.6.2+6.28.2"
+
 # Chess
 pallet-chess = { git = "https://github.com/SubstrateChess/pallet-chess.git", default-features = false, branch = "gmordie" }
 

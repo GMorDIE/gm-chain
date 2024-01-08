@@ -25,6 +25,9 @@ async-trait = { version = "0.1.48" }
 jsonrpc-core = "18.0.0"
 hex = "0.4.0"
 
+#librocksdb-sys = "=0.6.2+6.28.2"
+bindgen = "0.62"
+
 # Local
 gm-chain-runtime = { path = "../runtime" }
 
